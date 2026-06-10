@@ -58,6 +58,11 @@ def retrieve_guidelines(query: str, k: int = 3):
             - "title": protocol name
             - "confidence": normalized similarity score [0.0 to 1.0]
     """
+    # Check if simulation or low memory mode is active to bypass loading heavy neural models (saves RAM)
+    if os.getenv("SIMULATION_MODE", "false").lower() == "true" or os.getenv("LOW_MEM", "false").lower() == "true":
+        print("[RAG] Low memory / simulation mode active. Returning cached first-aid protocols directly.")
+        return get_offline_fallback(query)
+
     try:
         db = get_vector_store()
     except Exception as e:
