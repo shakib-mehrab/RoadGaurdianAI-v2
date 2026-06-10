@@ -28,6 +28,8 @@ const createCustomIcon = (color, emoji) => L.divIcon({
 const sosIcon      = createCustomIcon('#FF3B30', '🚨')
 const hospitalIcon = createCustomIcon('#30D158', '🏥')
 const hazardIcon   = createCustomIcon('#FF9F0A', '⚠️')
+const responderIcon = createCustomIcon('#0A84FF', '✚')
+const motorcycleIcon = createCustomIcon('#BF5AF2', '🏍️')
 
 // Default Dhaka coords
 const DEFAULT_CENTER = [23.8103, 90.4125]
@@ -50,9 +52,8 @@ function FlyToLocation({ location }) {
   }, [location, map])
   return null
 }
-
 export default function LiveMap({ height = 360 }) {
-  const { location, hospitals, hazards, sosActive } = useStore()
+  const { location, hospitals, hazards, sosActive, rescueFeeds, partnerRiders } = useStore()
 
   const center = location
     ? [location.lat || DEFAULT_CENTER[0], location.lng || DEFAULT_CENTER[1]]
@@ -109,6 +110,34 @@ export default function LiveMap({ height = 360 }) {
                 <strong>🏥 {h.name}</strong><br />
                 {h.type}<br />
                 ETA: <strong>{h.eta}</strong> — {h.dist}
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Community Responder markers */}
+        {sosActive && rescueFeeds?.responders && rescueFeeds.responders.map((resp, i) => (
+          <Marker key={i} position={[resp.lat, resp.lng]} icon={responderIcon}>
+            <Popup>
+              <div style={{ fontFamily: 'sans-serif', fontSize: 13 }}>
+                <strong>👤 Community Responder</strong><br />
+                Name: {resp.name} ({resp.role})<br />
+                Distance: {resp.dist} — Status: <strong>{resp.status}</strong>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Partner riders on map */}
+        {partnerRiders && partnerRiders.map((rider, i) => (
+          <Marker key={`rider-${i}`} position={[rider.lat, rider.lng]} icon={motorcycleIcon}>
+            <Popup>
+              <div style={{ fontFamily: 'sans-serif', fontSize: 13 }}>
+                <strong>🏍️ Partner Rider</strong><br />
+                {rider.name}<br />
+                Type: {rider.type}<br />
+                Rating: ⭐{rider.rating}<br />
+                Status: <strong>{rider.status}</strong>
               </div>
             </Popup>
           </Marker>

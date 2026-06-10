@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useStore } from './store/useStore'
 import Nav from './components/Nav'
+import BottomNav from './components/BottomNav'
+import InstallPrompt from './components/InstallPrompt'
 import OfflineBanner from './components/OfflineBanner'
 import Home from './pages/Home'
-import MobileAppContainer from './pages/MobileAppContainer'
+import Emergency from './pages/Emergency'
 import Dashboard from './pages/Dashboard'
 import HazardReport from './pages/HazardReport'
 import Accessibility from './pages/Accessibility'
 import DemoGraph from './pages/DemoGraph'
-import DemoFlow from './pages/DemoFlow'
-import PwaDemo from './pages/PwaDemo'
 
 function App() {
   const { setPwaInstallPrompt, setPwaInstalled } = useStore()
@@ -57,19 +57,23 @@ function App() {
       <Nav />
 
       {/* Main Page Layout */}
-      <main id="main-content" style={{ flex: 1, position: 'relative' }}>
+      <main id="main-content" style={{ flex: 1, position: 'relative', paddingBottom: isMobile ? '72px' : '0' }}>
         <Routes>
-          <Route path="/" element={isMobile ? <Navigate to="/app" replace /> : <Home />} />
-          <Route path="/app" element={<MobileAppContainer />} />
-          <Route path="/emergency" element={<Navigate to="/app" replace />} />
-          <Route path="/demo" element={<DemoFlow />} />
+          <Route path="/" element={isMobile ? <Navigate to="/emergency" replace /> : <Home />} />
+          <Route path="/emergency" element={<Emergency />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/hazard" element={<HazardReport />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/demo-graph" element={<DemoGraph />} />
-          <Route path="/pwa" element={<PwaDemo />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      {/* Install Prompt on Mobile */}
+      {isMobile && <InstallPrompt />}
+
+      {/* Persistent Bottom Nav on Mobile */}
+      {isMobile && <BottomNav />}
 
       {/* Floating Offline Status Banner */}
       <OfflineBanner />

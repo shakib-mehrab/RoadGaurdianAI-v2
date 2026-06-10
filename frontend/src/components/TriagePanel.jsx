@@ -1,4 +1,5 @@
 import { useStore } from '../store/useStore'
+import { Activity, AlertTriangle } from 'lucide-react'
 
 const SEVERITY_CONFIG = {
   1: { label: 'MINOR',    color: 'var(--green-400)',  bg: 'rgba(48,209,88,0.1)',    border: 'rgba(48,209,88,0.3)' },
@@ -13,8 +14,8 @@ export default function TriagePanel() {
 
   if (!triageResult) {
     return (
-      <div className="glass-card" style={{ padding: 24, textAlign: 'center' }}>
-        <div style={{ fontSize: '2rem', marginBottom: 8 }}>🩺</div>
+      <div className="glass-card" style={{ padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+        <Activity size={32} style={{ color: 'var(--text-muted)' }} />
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
           Triage assessment will appear after SOS is triggered
         </p>
@@ -28,7 +29,7 @@ export default function TriagePanel() {
     <div className="glass-card animate-float-up" style={{ padding: 24 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <span style={{ fontSize: '1.4rem' }}>🩺</span>
+        <Activity size={24} style={{ color: 'var(--blue-400)' }} />
         <div>
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1rem' }}>
             Triage Assessment
@@ -36,28 +37,63 @@ export default function TriagePanel() {
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Medical AI evaluation complete</div>
         </div>
 
-        {/* Severity badge */}
-        <div style={{
-          marginLeft: 'auto',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-        }}>
-          <div style={{
-            padding: '6px 16px',
-            borderRadius: 'var(--radius-md)',
-            background: cfg.bg,
-            border: `1px solid ${cfg.border}`,
-            color: cfg.color,
-            fontFamily: 'var(--font-display)',
-            fontWeight: 900,
-            fontSize: '1rem',
-            letterSpacing: '0.04em',
-            animation: triageResult.severity >= 4 ? 'pulse-glow 1.5s infinite' : 'none',
-          }}>
-            {cfg.label}
-          </div>
+        <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
           <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
             Level {triageResult.severity}/5 • Confidence {Math.round(triageResult.confidence * 100)}%
           </span>
+        </div>
+      </div>
+
+      {/* AI Triage Severity Ring and Priority Row */}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '14px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginBottom: 16 }}>
+        {/* SVG Circular Ring for Score */}
+        <div style={{ position: 'relative', width: 56, height: 56, flexShrink: 0 }}>
+          <svg width="56" height="56" viewBox="0 0 36 36">
+            <path
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="3.5"
+            />
+            <path
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke={cfg.color}
+              strokeWidth="3.5"
+              strokeDasharray={`${triageResult.triageScore || 87}, 100`}
+              strokeLinecap="round"
+              style={{ transition: 'stroke-dasharray 1s ease-out' }}
+            />
+          </svg>
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '0.82rem', fontWeight: 900, fontFamily: 'var(--font-display)', color: '#fff' }}>
+            {triageResult.triageScore || 87}%
+          </div>
+        </div>
+
+        {/* Priority Level Info */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Severity Score</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
+            <span style={{ fontSize: '1rem', fontWeight: 900, color: '#fff' }}>
+              {triageResult.triageScore || 87}/100
+            </span>
+            <span style={{
+              fontSize: '0.65rem',
+              padding: '2px 8px',
+              borderRadius: 'var(--radius-sm)',
+              background: cfg.bg,
+              color: cfg.color,
+              border: `1px solid ${cfg.border}`,
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              animation: triageResult.severity >= 4 ? 'pulse-glow 1.5s infinite' : 'none',
+            }}>
+              {triageResult.priorityLevel || cfg.label}
+            </span>
+          </div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: 4 }}>
+            Recommended Dispatch Priority: <strong style={{ color: cfg.color }}>{triageResult.priorityLevel || cfg.label}</strong>
+          </div>
         </div>
       </div>
 
@@ -71,12 +107,26 @@ export default function TriagePanel() {
           marginBottom: 16,
           display: 'flex', gap: 8, alignItems: 'center',
         }}>
-          <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+          <AlertTriangle size={18} style={{ color: 'var(--red-400)', flexShrink: 0 }} />
           <span style={{ color: 'var(--red-400)', fontWeight: 700, fontSize: '0.85rem' }}>
             DO NOT MOVE THE PATIENT — Possible spinal injury
           </span>
         </div>
       )}
+
+      {/* Diagnostic conditions */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.08em', marginBottom: 8 }}>
+          AI DIAGNOSTIC CONDITIONS SUMMARY
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {(triageResult.conditions || ['Head trauma risk', 'Fracture risk', 'Consciousness uncertain']).map((cond, i) => (
+            <span key={i} className="badge badge-blue" style={{ fontSize: '0.72rem', padding: '3px 8px' }}>
+              {cond}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* Injuries */}
       <div style={{ marginBottom: 16 }}>
@@ -128,8 +178,9 @@ export default function TriagePanel() {
       {/* Warnings */}
       {triageResult.warnings && triageResult.warnings.length > 0 && (
         <div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.08em', marginBottom: 8 }}>
-            ⚠️ WARNINGS
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <AlertTriangle size={14} style={{ color: 'var(--amber-400)' }} />
+            <span>WARNINGS</span>
           </div>
           {triageResult.warnings.map((w, i) => (
             <div key={i} style={{

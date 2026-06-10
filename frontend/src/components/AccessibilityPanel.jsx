@@ -1,37 +1,38 @@
 import { useStore } from '../store/useStore'
+import { Eye, ZoomIn, Heart, Contrast, VolumeX } from 'lucide-react'
 
 const A11Y_MODES = [
   {
     id: 'standard',
-    icon: '👁️',
+    icon: Eye,
     label: 'Standard',
     desc: 'Default interface for all users',
     color: 'var(--blue-400)',
   },
   {
     id: 'low-vision',
-    icon: '🔍',
+    icon: ZoomIn,
     label: 'Low Vision',
     desc: 'Enhanced contrast + 35% larger text',
     color: 'var(--amber-400)',
   },
   {
     id: 'elderly',
-    icon: '🧓',
+    icon: Heart,
     label: 'Elderly',
     desc: 'Larger tap targets + simplified layout',
     color: 'var(--green-400)',
   },
   {
     id: 'high-contrast',
-    icon: '⬛',
+    icon: Contrast,
     label: 'High Contrast',
     desc: 'Pure black/white for maximum visibility',
     color: 'var(--text-primary)',
   },
   {
     id: 'deaf',
-    icon: '🦻',
+    icon: VolumeX,
     label: 'Deaf / HoH',
     desc: 'Visual-only alerts, vibration patterns, no audio',
     color: '#BF5AF2',
@@ -45,6 +46,7 @@ export default function AccessibilityPanel() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {A11Y_MODES.map((mode) => {
         const active = a11yMode === mode.id
+        const IconComponent = mode.icon
         return (
           <button
             key={mode.id}
@@ -65,7 +67,19 @@ export default function AccessibilityPanel() {
               boxShadow: active ? `0 0 16px ${mode.color}22` : 'none',
             }}
           >
-            <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>{mode.icon}</span>
+            <div style={{
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 36,
+              height: 36,
+              borderRadius: 'var(--radius-sm)',
+              background: active ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
+              border: `1px solid ${active ? mode.color : 'var(--border)'}`
+            }}>
+              <IconComponent size={20} style={{ color: active ? mode.color : 'var(--text-secondary)' }} />
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{
                 fontWeight: 700,

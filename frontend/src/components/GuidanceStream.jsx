@@ -1,5 +1,6 @@
 import { useStore } from '../store/useStore'
 import ReactMarkdown from 'react-markdown'
+import { MessageSquare } from 'lucide-react'
 
 export default function GuidanceStream() {
   const { guidanceStream, ragStreaming, ragResponse, ragSources, sosActive, incidentState } = useStore()
@@ -11,8 +12,8 @@ export default function GuidanceStream() {
 
   if (!content && !streaming) {
     return (
-      <div className="glass-card" style={{ padding: 24, textAlign: 'center' }}>
-        <div style={{ fontSize: '2rem', marginBottom: 8 }}>💬</div>
+      <div className="glass-card" style={{ padding: 24, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+        <MessageSquare size={32} style={{ color: 'var(--text-muted)' }} />
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
           First-aid guidance will appear here once emergency is activated
         </p>
@@ -84,7 +85,7 @@ export default function GuidanceStream() {
       {/* Streaming response */}
       <div className="glass-card" style={{ padding: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-          <span style={{ fontSize: '1.1rem' }}>💬</span>
+          <MessageSquare size={18} style={{ color: 'var(--blue-400)' }} />
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem' }}>
             AI First-Aid Guidance
           </span>

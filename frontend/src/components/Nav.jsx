@@ -1,16 +1,15 @@
 import { NavLink } from 'react-router-dom'
 import { useStore } from '../store/useStore'
 import { useOffline } from '../hooks/useOffline'
+import { Shield, Home, ShieldAlert, Activity, AlertOctagon, Network, Sliders } from 'lucide-react'
 
 const NAV_LINKS = [
-  { to: '/', label: 'Home', exact: true },
-  { to: '/app', label: '📱 Mobile PWA' },
-  { to: '/pwa', label: '📥 PWA Sandbox' },
-  { to: '/demo', label: '⚡ Pitch Demo' },
-  { to: '/dashboard', label: '📊 Mission Control' },
-  { to: '/hazard', label: '⚠️ Hazard Report' },
-  { to: '/demo-graph', label: '🕸️ Knowledge Graph' },
-  { to: '/accessibility', label: '♿ Accessibility' },
+  { to: '/', label: 'Home', exact: true, icon: Home },
+  { to: '/emergency', label: 'Emergency Dispatch', icon: ShieldAlert },
+  { to: '/dashboard', label: 'Mission Control', icon: Activity },
+  { to: '/hazard', label: 'Hazard Report', icon: AlertOctagon },
+  { to: '/demo-graph', label: 'Knowledge Graph', icon: Network },
+  { to: '/accessibility', label: 'Accessibility', icon: Sliders },
 ]
 
 export default function Nav() {
@@ -20,8 +19,8 @@ export default function Nav() {
   return (
     <nav className="nav" role="navigation" aria-label="Main navigation">
       {/* Logo */}
-      <NavLink to="/" className="nav-logo" id="nav-logo">
-        <span style={{ fontSize: '1.4rem' }}>🛡️</span>
+      <NavLink to="/" className="nav-logo" id="nav-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Shield size={22} style={{ color: 'var(--blue-400)' }} />
         <span>Road<span style={{ color: 'var(--red-500)' }}>Guardian</span> AI</span>
         {sosActive && (
           <span className="badge badge-red" style={{ marginLeft: 8, animation: 'pulse-glow 1s infinite' }}>
@@ -32,21 +31,23 @@ export default function Nav() {
 
       {/* Links */}
       <div className="nav-links" role="list">
-        {NAV_LINKS.map(({ to, label, exact }) => (
+        {NAV_LINKS.map(({ to, label, exact, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             end={exact}
             role="listitem"
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            {label}
+            <Icon size={16} />
+            <span>{label}</span>
           </NavLink>
         ))}
       </div>
 
       {/* Status indicators */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 16 }}>
+      <div className="nav-status-indicators" style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
         {/* Backend connection */}
         <span
           className="badge"

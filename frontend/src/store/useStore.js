@@ -143,7 +143,144 @@ export const useStore = create((set, get) => ({
   currentMobileScreen: 'home',
   setMobileScreen: (screen) => set({ currentMobileScreen: screen }),
 
-  // ---- Riya Akter Real Profile ----
+  silentSosMode: false,
+  setSilentSosMode: (val) => set({ silentSosMode: val }),
+
+  // Speech translation states
+  translateLanguageFrom: 'en',
+  translateLanguageTo: 'bn',
+  activeTranslatorLanguage: { input: 'en', output: 'bn' },
+  setActiveTranslatorLanguage: (input, output) => set({ activeTranslatorLanguage: { input, output } }),
+  translatedSpeechResult: '',
+  isTranslating: false,
+  translateEmergencyDialogue: async (text, from, to) => {
+    set({ isTranslating: true, translateLanguageFrom: from, translateLanguageTo: to, activeTranslatorLanguage: { input: from, output: to } })
+    await new Promise(r => setTimeout(r, 600))
+    
+    // Simple mock translations for emergency dialogues
+    const bnDict = {
+      "Do not move the patient": "রোগীকে নাড়াচাড়া করবেন না",
+      "Where does it hurt?": "কোথায় ব্যথা করছে?",
+      "Ambulance is on the way": "অ্যাম্বুলেন্স আসছে",
+      "Can you breathe?": "আপনি কি শ্বাস নিতে পারছেন?",
+      "Apply pressure to the wound": "ক্ষত স্থানে চাপ প্রয়োগ করুন"
+    }
+    const hiDict = {
+      "Do not move the patient": "मरीज को हिलाएं नहीं",
+      "Where does it hurt?": "दर्द कहाँ हो रहा है?",
+      "Ambulance is on the way": "एम्बुलेंस रास्ते में है",
+      "Can you breathe?": "क्या आप सांस ले सकते हैं?",
+      "Apply pressure to the wound": "घाव पर दबाव डालें"
+    }
+    const enDict = {
+      "রোগীকে নাড়াচাড়া করবেন না": "Do not move the patient",
+      "কোথায় ব্যথা করছে?": "Where does it hurt?",
+      "অ্যাম্বুলেন্স আসছে": "Ambulance is on the way",
+      "আপনি কি শ্বাস নিতে পারছেন?": "Can you breathe?",
+      "ক্ষত স্থানে চাপ প্রয়োগ করুন": "Apply pressure to the wound",
+      "मरीज को हिलाएं नहीं": "Do not move the patient",
+      "दर्द कहाँ हो रहा है?": "Where does it hurt?",
+      "एम्बुलेंस रास्ते में है": "Ambulance is on the way",
+      "क्या आप सांस ले सकते हैं?": "Can you breathe?",
+      "घाव पर दबाव डालें": "Apply pressure to the wound"
+    }
+
+    let translation = ""
+    if (to === 'bn') {
+      translation = bnDict[text] || `[বাংলা অনুবাদ]: ${text}`
+    } else if (to === 'hi') {
+      translation = hiDict[text] || `[हिंदी अनुवाद]: ${text}`
+    } else {
+      translation = enDict[text] || `[Translated]: ${text}`
+    }
+
+    set({ translatedSpeechResult: translation, isTranslating: false })
+  },
+
+  // Telemetry States
+  telemetrySpeed: 45,
+  telemetryGForce: 0.98,
+  telemetryDriverScore: 94,
+  telemetryAlert: null,
+  telemetryLogs: [
+    { time: '16:52:10', speed: 45, gForce: 0.98, status: 'Normal' },
+    { time: '16:52:05', speed: 52, gForce: 1.02, status: 'Normal' },
+    { time: '16:52:00', speed: 58, gForce: 1.15, status: 'Decelerating' },
+    { time: '16:51:55', speed: 64, gForce: 1.42, status: 'Braking Hard' }
+  ],
+  partnerSafetyTelemetry: {
+    speed: 45,
+    gForce: 0.98,
+    driverScore: 94,
+    alert: null,
+    logs: [
+      { time: '16:52:10', speed: 45, gForce: 0.98, status: 'Normal' },
+      { time: '16:52:05', speed: 52, gForce: 1.02, status: 'Normal' },
+      { time: '16:52:00', speed: 58, gForce: 1.15, status: 'Decelerating' },
+      { time: '16:51:55', speed: 64, gForce: 1.42, status: 'Braking Hard' }
+    ]
+  },
+  setPartnerSafetyTelemetry: (telemetry) => set(s => ({
+    partnerSafetyTelemetry: { ...s.partnerSafetyTelemetry, ...telemetry }
+  })),
+  isSimulatingTelemetry: false,
+  startTelemetrySimulation: () => {
+    if (get().isSimulatingTelemetry) return
+    set({ isSimulatingTelemetry: true })
+    const intervalId = setInterval(() => {
+      if (!get().isSimulatingTelemetry) {
+        clearInterval(intervalId)
+        return
+      }
+      const speedChange = Math.floor(Math.random() * 11) - 5 // -5 to +5
+      const newSpeed = Math.min(110, Math.max(0, get().telemetrySpeed + speedChange))
+      const newG = parseFloat((0.95 + Math.random() * 0.15 + (newSpeed > 60 ? 0.2 : 0)).toFixed(2))
+      const scoreChange = newSpeed > 60 ? -1 : 1
+      const newScore = Math.min(100, Math.max(30, get().telemetryDriverScore + scoreChange))
+      
+      const newAlert = newSpeed > 75 
+        ? 'High Speed Warning! Driver exceeding safety threshold.' 
+        : newG > 1.3 
+          ? 'High G-Force Warning (Aggressive Maneuver)' 
+          : null
+      
+      const newLog = {
+        time: new Date().toLocaleTimeString(),
+        speed: newSpeed,
+        gForce: newG,
+        status: newSpeed > 75 ? 'Speeding' : newG > 1.3 ? 'G-Alert' : 'Normal'
+      }
+
+      set(s => {
+        const telemetryLogs = [newLog, ...s.telemetryLogs.slice(0, 19)];
+        return {
+          telemetrySpeed: newSpeed,
+          telemetryGForce: newG,
+          telemetryDriverScore: newScore,
+          telemetryAlert: newAlert,
+          telemetryLogs,
+          partnerSafetyTelemetry: {
+            speed: newSpeed,
+            gForce: newG,
+            driverScore: newScore,
+            alert: newAlert,
+            logs: telemetryLogs
+          }
+        }
+      })
+    }, 3000)
+  },
+  stopTelemetrySimulation: () => {
+    set({ isSimulatingTelemetry: false })
+  },
+
+  // Nearest partner riders
+  partnerRiders: [
+    { id: 'rider_1', name: 'Md. Jalil (Pathao Rider)', phone: '+880-171-111-222', dist: '150m', type: 'Pathao Rider', lat: 23.6930, lng: 90.5190, status: 'Online', rating: 4.8 },
+    { id: 'rider_2', name: 'Rashedul Islam (Pathao Rider)', phone: '+880-172-333-444', dist: '320m', type: 'Pathao Rider', lat: 23.6912, lng: 90.5178, status: 'Online', rating: 4.9 },
+    { id: 'rider_3', name: 'Aung Kyaw (Grab Bike)', phone: '+880-173-555-666', dist: '480m', type: 'Grab Rider', lat: 23.6942, lng: 90.5198, status: 'Online', rating: 4.7 }
+  ],
+
   userProfile: {
     name: 'Riya Akter',
     age: 24,
@@ -157,8 +294,22 @@ export const useStore = create((set, get) => ({
     preferredLanguage: 'bn', // বাংলা
     accessibilityMode: 'deaf',
     medicalNotes: 'No major chronic illness',
-    preferredHospital: 'Dhaka Medical College Hospital'
+    preferredHospital: 'Dhaka Medical College Hospital',
+    allergies: 'Penicillin',
+    chronicDiseases: 'Asthma',
+    medications: 'Albuterol Inhaler',
+    insuranceProvider: 'Pragati Insurance Ltd.',
+    policyNumber: 'PRG-2026-88491A'
   },
+  updateProfile: (updated) => set(s => ({
+    userProfile: { ...s.userProfile, ...updated }
+  })),
+  rescueFeeds: {
+    familyStatus: [],
+    responders: []
+  },
+  routeRiskAnalysis: null,
+  insuranceClaim: null,
   
   // ---- Partner Integrations ----
   partnerIntegrations: {
@@ -252,32 +403,48 @@ export const useStore = create((set, get) => ({
   setOnline: (v) => set({ isOnline: v }),
 
   // ---- Reset ----
-  resetIncident: () => set({
-    sosActive: false,
-    sosTimestamp: null,
-    incidentState: 'IDLE',
-    agentStatuses: Object.fromEntries(AGENTS.map(a => [a.id, 'idle'])),
-    agentLogs:     Object.fromEntries(AGENTS.map(a => [a.id, []])),
-    agentProgress: Object.fromEntries(AGENTS.map(a => [a.id, 0])),
-    triageResult: null,
-    hospitals: MOCK_HOSPITALS,
-    mcpTools: [],
-    guidanceStream: '',
-    currentMobileScreen: 'home',
-    demoActive: false,
-    demoStep: 0,
-    a11yMode: 'deaf',
-    partnerIntegrations: {
-      provider: 'Pathao',
-      rideId: 'PT-24891',
-      driverName: 'Md. Rahim',
-      vehicleType: 'Motorcycle',
-      tripStatus: 'Ride Active',
-      locationStart: 'Comilla University',
-      locationEnd: 'Dhaka',
-      emergencySharing: 'Enabled'
+  resetIncident: () => {
+    const store = get()
+    if (store.isSimulatingTelemetry) {
+      store.stopTelemetrySimulation()
     }
-  }),
+    set({
+      sosActive: false,
+      sosTimestamp: null,
+      silentSosMode: false,
+      translatedSpeechResult: '',
+      partnerRiders: [
+        { id: 'rider_1', name: 'Md. Jalil (Pathao Rider)', phone: '+880-171-111-222', dist: '150m', type: 'Pathao Rider', lat: 23.6930, lng: 90.5190, status: 'Online', rating: 4.8 },
+        { id: 'rider_2', name: 'Rashedul Islam (Pathao Rider)', phone: '+880-172-333-444', dist: '320m', type: 'Pathao Rider', lat: 23.6912, lng: 90.5178, status: 'Online', rating: 4.9 },
+        { id: 'rider_3', name: 'Aung Kyaw (Grab Bike)', phone: '+880-173-555-666', dist: '480m', type: 'Grab Rider', lat: 23.6942, lng: 90.5198, status: 'Online', rating: 4.7 }
+      ],
+      incidentState: 'IDLE',
+      agentStatuses: Object.fromEntries(AGENTS.map(a => [a.id, 'idle'])),
+      agentLogs:     Object.fromEntries(AGENTS.map(a => [a.id, []])),
+      agentProgress: Object.fromEntries(AGENTS.map(a => [a.id, 0])),
+      triageResult: null,
+      hospitals: MOCK_HOSPITALS,
+      mcpTools: [],
+      guidanceStream: '',
+      currentMobileScreen: 'home',
+      demoActive: false,
+      demoStep: 0,
+      a11yMode: 'deaf',
+      insuranceClaim: null,
+      routeRiskAnalysis: null,
+      rescueFeeds: { familyStatus: [], responders: [] },
+      partnerIntegrations: {
+        provider: 'Pathao',
+        rideId: 'PT-24891',
+        driverName: 'Md. Rahim',
+        vehicleType: 'Motorcycle',
+        tripStatus: 'Ride Active',
+        locationStart: 'Comilla University',
+        locationEnd: 'Dhaka',
+        emergencySharing: 'Enabled'
+      }
+    })
+  },
 
   // ---- WebSocket Event Interpreter ----
   setAgentFromWs: (data) => {
@@ -490,11 +657,36 @@ export const useStore = create((set, get) => ({
   },
 
   // ---- SOS Trigger (mock orchestration) ----
-  triggerSOS: (location) => {
+  triggerSOS: (location, silent = false) => {
     const store = get()
     if (store.sosActive) return
 
-    set({ sosActive: true, sosTimestamp: Date.now(), location, incidentState: 'DETECTED' })
+    const loc = location || { lat: 23.6922, lng: 90.5186 }
+    
+    // Divert the nearest partner rider simulation
+    const updatedRiders = store.partnerRiders.map((rider, idx) => {
+      if (idx === 0) {
+        return { ...rider, status: 'Diverting to Scene (First Responder)' }
+      }
+      return rider
+    })
+
+    set({
+      sosActive: true,
+      sosTimestamp: Date.now(),
+      location: loc,
+      silentSosMode: silent,
+      partnerRiders: updatedRiders,
+      incidentState: 'DETECTED',
+      rescueFeeds: {
+        familyStatus: [
+          { time: 'Just now', text: silent 
+            ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts' 
+            : 'SOS broadcast initiated — scanning vital profiles...' }
+        ],
+        responders: []
+      }
+    })
 
     const delay = (ms) => new Promise(r => setTimeout(r, ms))
     const agentOrder = ['orchestrator', 'triage', 'locate', 'dispatch', 'guidance', 'hazard', 'guard']
@@ -520,7 +712,18 @@ export const useStore = create((set, get) => ({
     // Orchestrator first, then parallel fan-out
     ;(async () => {
       await runAgent('orchestrator', 200)
-      set({ incidentState: 'TRIAGED' })
+      set(s => ({
+        incidentState: 'TRIAGED',
+        rescueFeeds: {
+          ...s.rescueFeeds,
+          familyStatus: [
+            { time: 'Just now', text: s.silentSosMode 
+              ? 'Silent telemetry analysis dispatched to 999 desk' 
+              : 'Transmitted Medical ID to 999 Dispatch Desk' },
+            ...s.rescueFeeds.familyStatus
+          ]
+        }
+      }))
 
       // Parallel agents
       await Promise.all([
@@ -532,12 +735,29 @@ export const useStore = create((set, get) => ({
         runAgent('guard',    300),
       ])
 
-      set({ incidentState: 'DISPATCHED' })
+      set(s => ({
+        incidentState: 'DISPATCHED',
+        rescueFeeds: {
+          familyStatus: [
+            { time: 'Just now', text: 'Nearest partner rider (Md. Jalil, 150m away) diverted to crash scene to assist as emergency responder' },
+            { time: '1s ago', text: s.silentSosMode
+              ? `Mother Amina Akter notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
+              : `Mother Amina Akter notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})` },
+            { time: '2s ago', text: s.silentSosMode
+              ? 'Stealth Live Audio Stream shared with 999 Desk'
+              : 'Transmitted Medical ID to 999 Dispatch Desk' },
+            { time: '3s ago', text: s.silentSosMode
+              ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts'
+              : 'SOS broadcast initiated — scanning vital profiles...' }
+          ],
+          responders: [
+            { name: 'Rafiqul Islam', role: 'First Responder', dist: '220m', status: 'En route', lat: loc.lat + 0.0018, lng: loc.lng - 0.0015 },
+            { name: 'Md. Jalil (Pathao Rider)', role: 'Nearest Partner Diverted', dist: '150m', status: 'Diverting to Scene', lat: loc.lat + 0.0008, lng: loc.lng + 0.0004 }
+          ]
+        }
+      }))
       await delay(800)
 
-      // Dynamically calculate nearest hospitals based on coordinates
-      const loc = location || { lat: 23.6922, lng: 90.5186 }
-      
       const getHaversineDistance = (lat1, lon1, lat2, lon2) => {
         const R = 6371.0
         const dLat = (lat2 - lat1) * Math.PI / 180
@@ -674,11 +894,47 @@ export const useStore = create((set, get) => ({
         }).sort((a, b) => parseFloat(a.dist) - parseFloat(b.dist)).slice(0, 3)
       }
 
-      set({
-        triageResult: MOCK_TRIAGE_RESULT,
-        hospitals: simulatedHospitals,
-        mcpTools: MOCK_MCP_TOOLS
-      })
+      set(s => ({
+        triageResult: {
+          ...MOCK_TRIAGE_RESULT,
+          triageScore: s.silentSosMode ? 78 : 87,
+          priorityLevel: 'CRITICAL',
+          conditions: s.silentSosMode 
+            ? ['High stress detected', 'Stealth stream audio flags: shouting/screaming']
+            : ['Head trauma risk', 'Fracture risk', 'Consciousness uncertain'],
+        },
+        hospitals: simulatedHospitals.map((h, i) => ({
+          ...h,
+          traumaBeds: i === 0 ? 4 : Math.floor(Math.random() * 4) + 1,
+          specialists: i === 0 
+            ? ['Orthopedic Specialist', 'Neurosurgeon', 'Trauma Coordinator']
+            : ['General Surgeon', 'ER Physician'],
+          recommendationReason: i === 0 
+            ? `ETA ${h.eta} + specialized trauma & orthopedic surgery readiness & 4 trauma beds available`
+            : `Secondary option — general emergency care`
+        })),
+        mcpTools: MOCK_MCP_TOOLS,
+        rescueFeeds: {
+          familyStatus: [
+            { time: 'Just now', text: s.silentSosMode ? 'Family members notified & listening in' : 'Mother Amina Akter opened live tracking link' },
+            { time: '1m ago', text: 'Nearest partner rider (Md. Jalil, 150m away) diverted to crash scene to assist as emergency responder' },
+            { time: '2m ago', text: s.silentSosMode
+              ? `Mother Amina Akter notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
+              : `Mother Amina Akter notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})` },
+            { time: '2m ago', text: s.silentSosMode
+              ? 'Stealth Live Audio Stream shared with 999 Desk'
+              : 'Transmitted Medical ID to 999 Dispatch Desk' },
+            { time: '3m ago', text: s.silentSosMode
+              ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts'
+              : 'SOS broadcast initiated — scanning vital profiles...' }
+          ],
+          responders: [
+            { name: 'Rafiqul Islam', role: 'First Responder', dist: '30m', status: 'Arrived on-site', lat: loc.lat + 0.0003, lng: loc.lng - 0.0004 },
+            { name: 'Md. Jalil (Pathao Rider)', role: 'Nearest Partner Diverted', dist: '20m', status: 'Arrived to assist', lat: loc.lat + 0.0001, lng: loc.lng + 0.0002 },
+            { name: 'Dr. Tanvir', role: 'Volunteer Doctor', dist: '450m', status: 'En route', lat: loc.lat - 0.0025, lng: loc.lng + 0.0031 }
+          ]
+        }
+      }))
 
       // Stream guidance
       set({ incidentState: 'GUIDED', guidanceStream: '' })
@@ -689,7 +945,16 @@ export const useStore = create((set, get) => ({
       }
 
       await delay(1500)
-      set({ incidentState: 'RESOLVED' })
+      set(s => ({
+        incidentState: 'RESOLVED',
+        rescueFeeds: {
+          ...s.rescueFeeds,
+          familyStatus: [
+            { time: 'Just now', text: 'Patient admitted to Dhaka Medical College Hospital' },
+            ...s.rescueFeeds.familyStatus
+          ]
+        }
+      }))
     })()
   },
 
@@ -718,5 +983,45 @@ export const useStore = create((set, get) => ({
     }
 
     set({ ragStreaming: false })
+  },
+
+  // ---- Safe Route AI & Crash Prediction ----
+  analyzeRoute: async (from, to) => {
+    set({ routeRiskAnalysis: { loading: true } })
+    await new Promise(r => setTimeout(r, 1200))
+    const dangerIndex = Math.floor(Math.random() * 45) + 35
+    const weatherWarning = dangerIndex > 60 ? 'Heavy rain, waterlogging and visibility < 200m' : 'Light drizzle, damp surfaces'
+    const hotspots = [
+      { name: 'Kanchpur Bridge Junction', reason: 'High congestion & merge collisions' },
+      { name: 'Signboard Intersection', reason: 'Frequent pedestrian crossings' }
+    ]
+    const safeRoute = `Redirect via Dhaka-Mawa Expressway. ETA is +10m, but historical crash frequency is 82% lower.`
+    set({
+      routeRiskAnalysis: {
+        loading: false,
+        from,
+        to,
+        dangerIndex,
+        weatherWarning,
+        hotspots,
+        safeRoute
+      }
+    })
+  },
+
+  // ---- Emergency Insurance Claim Package ----
+  fileInsuranceClaim: async (claimData) => {
+    set({ insuranceClaim: { status: 'submitting' } })
+    await new Promise(r => setTimeout(r, 1500))
+    set({
+      insuranceClaim: {
+        status: 'submitted',
+        claimId: `CLM-${Math.floor(100000 + Math.random() * 900000)}`,
+        timestamp: new Date().toLocaleString(),
+        insurer: claimData.insurer,
+        policy: claimData.policy,
+        amountApproved: 'Full Coverage Approved (First-tier ER dispatch)'
+      }
+    })
   },
 }))

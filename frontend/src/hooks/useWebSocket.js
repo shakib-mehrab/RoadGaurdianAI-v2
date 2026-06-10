@@ -1,7 +1,18 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { useStore } from '../store/useStore'
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '192.168.10.136:8000';
+const getDefaultBackendUrl = () => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'localhost:8000';
+    }
+    return `${hostname}:8000`;
+  }
+  return '192.168.10.136:8000';
+};
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || getDefaultBackendUrl();
 
 const getWsUrl = (url) => {
   if (url.startsWith('http://')) {

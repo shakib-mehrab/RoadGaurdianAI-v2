@@ -33,9 +33,11 @@ An offline-first, multi-agent emergency coordination system that combines real-t
 
 ## 🎥 Pitch Demo & Mockup Previews
 
-* **⚡ Pitch Walkthrough Deck (`/demo`)**: A dual-pane presentation panel showing Riya Akter’s Kanchpur Bridge scenario chronological stepper (6:12 PM to 7:08 PM) synced to the simulated mobile device views automatically.
-* **📥 PWA Sandbox (`/pwa`)**: Interactive sandbox containing 7 stages showcasing browser wrapper simulations, Add to Home Screen prompts, launcher icons, splash screen launching, standalone headers hiding, and an interactive **network toggle** simulating highway connectivity drops.
-* **📊 Mission Control (`/dashboard`)**: A premium dark-mode operator console displaying multi-agent telemetry pipelines, active vehicle streams, and live hospital ETAs.
+* **⚡ Pitch Walkthrough Timeline (`/demo-graph`)**: A dual-pane presentation panel showing Riya Akter’s Kanchpur Bridge scenario chronological stepper (6:12 PM to 7:08 PM) synced to the simulated mobile device views automatically.
+* **🆘 Emergency Rescue (`/emergency`)**: Accessibility-first visual/tactile SOS trigger with visual vibration pulses, high-contrast indicators, and bystander support cards.
+* **📊 Mission Control (`/dashboard`)**: A dark-mode operator console displaying multi-agent telemetry pipelines, nearest hospital routes, and the Emergency Ride Dispatch panel (integrated with Pathao, oBhai, and Uber).
+* **⚠️ Hazard Reporter (`/hazard`)**: Edge-AI vision telemetry upload and safe route AI alternative pathways analyzer.
+* **♿ Accessibility Hub (`/accessibility`)**: Toggle deaf/dyslexia accessibility modes and download a custom-generated SVG/PNG medical ID QR Lockscreen overlay.
 
 ---
 
@@ -97,8 +99,9 @@ RoadGuardian AI replaces slow, manual voice emergency calls with automated, hard
 | **Service Worker Caching** | 🟢 **Live** | Custom Service Worker (`sw.js`) caches static assets for offline capability. |
 | **Hospital Locator** | 🟢 **Live** | Queries 5 live Overpass OSM API mirrors with client-side Haversine fallbacks. |
 | **B2B Claims Generator** | 🟢 **Live** | Compiles crash telemetry, impact force, and dispatch details into a verifiable claims modal. |
-| **Active Ride Sync** | 🟢 **Live** | Interactive Pathao / Grab toggle updating ride details and driver metrics in real-time. |
-| **Multilingual Bystander Cards** | 🟢 **Live** | Regional Translation Agent producing bilingual helper modals. |
+| **Emergency Ride Dispatch** | 🟢 **Live** | Dashboard panel integrated with Pathao, oBhai, and Uber with GPS quick-copy capabilities. |
+| **Downloadable QR Lockscreen** | 🟢 **Live** | Custom HTML5 Canvas renderer drawing personalized emergency wallpaper (notch, vitals) with immediate PNG download. |
+| **BIMSTEC Bystander Cards** | 🟢 **Live** | Regional Translation Agent producing bilingual helper modals. |
 | **Local LLM Fallback** | 🟡 **Simulated** | Emulates local Phi-3 / DeepSeek-R1 responses if no Groq Cloud Key is present. |
 | **999 Emergency Dispatch** | 🟡 **Simulated** | Emulates dispatcher confirmation workflows and confirmation tickets. |
 
@@ -129,7 +132,7 @@ roadguardian-ai/
 ## ⚙️ Installation & Running the Stack
 
 ### Prerequisites
-* **Node.js**: v20+
+* **Node.js**: v18+
 * **Python**: v3.10+
 * **ChromaDB** and **SentenceTransformers** python packages.
 
@@ -146,11 +149,15 @@ CHROMA_DB_PATH=./rag/chroma_db
 ```
 
 ### Step 2: Seed RAG Database & Run Backend
-On first startup, the backend automatically seeds the vector store using trauma care documents inside `backend/rag/ingest`. To run manually:
-```bash
-# Set PYTHONPATH and launch FastAPI with hot-reloading
-PYTHONPATH=. python3 backend/main.py
-```
+On first startup, the backend automatically seeds the vector store using trauma care documents inside `backend/rag/ingest`. To run:
+- **Windows (PowerShell):**
+  ```powershell
+  .\.venv\Scripts\python.exe backend/main.py
+  ```
+- **Linux/macOS:**
+  ```bash
+  PYTHONPATH=. python3 backend/main.py
+  ```
 *Backend API will listen on:* `http://localhost:8000`
 
 ### Step 3: Run Frontend
@@ -163,15 +170,24 @@ npm run dev
 
 ---
 
+## 🚀 Deployment & CI/CD Pipeline
+- **Production Integration Roadmap:** See [REAL_DATA_WORKFLOW.md](file:///f:/HACKATHON/Inifnity/update/RoadGaurdianAI/RoadGaurdianAI/REAL_DATA_WORKFLOW.md) for planning transitioning mock components to real-world services.
+- **Step-by-step Live Deployment Guide:** See [DEPLOYMENT_GUIDE.md](file:///f:/HACKATHON/Inifnity/update/RoadGaurdianAI/RoadGaurdianAI/DEPLOYMENT_GUIDE.md) to set up hosting on Vercel and Render.
+- **GitHub CI/CD Automation:** The project features a GitHub Actions workflow in [.github/workflows/deploy.yml](file:///f:/HACKATHON/Inifnity/update/RoadGaurdianAI/RoadGaurdianAI/.github/workflows/deploy.yml) that builds the frontend and verifies backend syntax compilation on pull requests or commits.
+
+---
+
 ## 🚀 The Commercial Path: InsurTech & Ride-Share Wedges
 While emergency response is traditionally a low-monetization, slow-moving GovTech sale, RoadGuardian AI operates as a **B2B2C Telematics Risk Registry**:
 
-1. **Ride-Share Safety Bundling (Pathao / Grab)**: Embedding the CrashSense SDK into active passenger apps to decrease driver liability and secure lower fleet insurance rates.
+1. **Ride-Share Safety Bundling (Pathao / oBhai / Uber)**: Embedding the CrashSense SDK into active passenger apps to decrease driver liability and secure lower fleet insurance rates.
 2. **Insurance Claims Notarization**: Charging auto insurers a transactional fee ($5/report) to download hardware-verified, cryptographic "Incident Certificates" containing raw impact G-force, timestamps, and locations to eradicate claim fraud.
 3. **Trauma ER Intake SaaS**: SaaS portals ($500 - $1,500/mo) for private healthcare networks that streamline intake billing pre-authorization, reducing ER intake delays from 25 minutes to zero.
 
+*Note: The Social Impact Metrics and Commercial Business Model sections are dynamically rendered directly on the [Home landing page](file:///f:/HACKATHON/Inifnity/update/RoadGaurdianAI/RoadGaurdianAI/frontend/src/pages/Home.jsx).*
+
 *For the complete YC-partner critique, risk analysis, and Year 1 to Year 10 execution roadmaps, see the strategic report:*  
-📄 [roadguardian_business_analysis.md](file:///Users/shakera/.gemini/antigravity-ide/brain/05ec2097-6b96-4c14-96ab-896720e45af7/roadguardian_business_analysis.md)
+📄 [roadguardian_business_analysis.md](file:///f:/HACKATHON/Inifnity/update/RoadGaurdianAI/RoadGaurdianAI/roadguardian_business_analysis.md)
 
 ---
 

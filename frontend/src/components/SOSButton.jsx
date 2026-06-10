@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { useStore } from '../store/useStore'
+import { ShieldAlert } from 'lucide-react'
 
 export default function SOSButton({ onTrigger }) {
   const { sosActive } = useStore()
@@ -114,7 +115,7 @@ export default function SOSButton({ onTrigger }) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 4,
+            gap: 8,
             userSelect: 'none',
             WebkitUserSelect: 'none',
             animation: sosActive ? 'pulse-glow 2s ease-in-out infinite' : 'none',
@@ -122,11 +123,11 @@ export default function SOSButton({ onTrigger }) {
             zIndex: 1,
           }}
         >
-          <span style={{ fontSize: '2.5rem', lineHeight: 1 }}>🚨</span>
+          <ShieldAlert size={38} style={{ color: '#fff', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
           <span style={{
             fontFamily: 'var(--font-display)',
             fontWeight: 900,
-            fontSize: sosActive ? '1.5rem' : '2rem',
+            fontSize: sosActive ? '1.3rem' : '1.8rem',
             color: '#fff',
             letterSpacing: '-0.02em',
             textShadow: '0 2px 8px rgba(0,0,0,0.4)',
