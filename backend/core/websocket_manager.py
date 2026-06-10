@@ -10,6 +10,35 @@ import importlib.util
 def _load_contracts():
     backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     contracts_path = os.path.join(os.path.dirname(backend_dir), "shared-contracts", "websocket-events", "schemas.py")
+    
+    # Check if the shared-contracts folder is available (e.g. local development)
+    if not os.path.exists(contracts_path):
+        # Fall back to the local bundled backup inside the backend core folder (e.g. docker/render builds)
+        local_fallback = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schemas_fallback.py")
+        if os.path.exists(local_fallback):
+            spec = importlib.util.spec_from_file_location("shared_contracts_schemas", local_fallback)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules["shared_contracts_schemas"] = module
+            spec.loader.exec_module(module)
+            return module
+        else:
+            # Absolute fallback to dynamic inline schema to avoid fatal crashes
+            print("[WARNING] Could not find schemas.py or schemas_fallback.py. Utilizing minimal dynamic inline fallback.")
+            from pydantic import BaseModel, Field
+            from datetime import datetime
+            class BaseEmergencyEvent(BaseModel):
+                event: str
+                agent: str
+                status: str
+                timestamp: str = Field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+                message: str
+                metadata: dict = Field(default_factory=dict)
+            class MockModule:
+                pass
+            mock_module = MockModule()
+            mock_module.BaseEmergencyEvent = BaseEmergencyEvent
+            return mock_module
+
     spec = importlib.util.spec_from_file_location("shared_contracts_schemas", contracts_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules["shared_contracts_schemas"] = module
