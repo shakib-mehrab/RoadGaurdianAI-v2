@@ -1,0 +1,154 @@
+{
+  "name": "RoadGuardian SOS Alert Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sos-trigger",
+        "options": {}
+      },
+      "id": "webhook-node-id",
+      "name": "Webhook SOS Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/sos",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "http-forward-id",
+      "name": "Forward to FastAPI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.severity }}",
+              "value2": "critical"
+            }
+          ]
+        }
+      },
+      "id": "switch-severity-id",
+      "name": "Check Severity",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/mcp/dispatch",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"tool\": \"dispatch_emergency\", \"params\": { \"hospital_name\": \"Dhaka Medical College Hospital\", \"lat\": {{ $json.location.lat }}, \"lng\": {{ $json.location.lng }} } }",
+        "options": {}
+      },
+      "id": "dispatch-ambulance-id",
+      "name": "Dispatch Ambulance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/mcp/dispatch",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"tool\": \"notify_family\", \"params\": { \"contact_info\": \"+880-171-XXX-XXXX\" } }",
+        "options": {}
+      },
+      "id": "notify-family-id",
+      "name": "Notify Family SMS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {},
+      "id": "merge-branches-id",
+      "name": "Merge Status",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Webhook SOS Trigger": {
+      "main": [
+        [
+          {
+            "node": "Forward to FastAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward to FastAPI": {
+      "main": [
+        [
+          {
+            "node": "Check Severity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Severity": {
+      "main": [
+        [
+          {
+            "node": "Dispatch Ambulance",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Family SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch Ambulance": {
+      "main": [
+        [
+          {
+            "node": "Merge Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Family SMS": {
+      "main": [
+        [
+          {
+            "node": "Merge Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "1"
+}

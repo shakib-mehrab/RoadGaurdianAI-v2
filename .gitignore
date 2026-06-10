@@ -1,0 +1,39 @@
+# Python environment and cache
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local environment variables
+.env
+
+# Local databases and caches
+backend/rag/chroma_db/
+backend/rag/embeddings/cache/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Exclude plans, walkthroughs, tasks, blueprints, goals as requested
+*plan*.md
+*Plan*.md
+*walkthrough*.md
+*walkthrouhh*.md
+*task*.md
+*goal*.md
+*checklist*.md
+BluePrint.md
+Infinityfest.code-workspace
+current-Responsive PWA Behavior & Mobile-First Enhancements.md
+new-features-to-introduce.md
+overall-
+RESPONSIVE PWA BEHAVIOR & DEPLOYMENT REQUIREMENTS.md
+roadguardian_business_analysis.md
+roadguardian_business_analysis2.md
+RoadGuardian_Implementation_Guide.txt
+Updated-design-prompt.md
+backend/monitoring/README.md

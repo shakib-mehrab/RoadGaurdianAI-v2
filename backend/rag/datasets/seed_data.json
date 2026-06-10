@@ -1,0 +1,122 @@
+[
+  {
+    "title": "Severe Bleeding & Arterial Hemorrhage Control",
+    "source": "WHO Trauma Response Protocol Section 2.1",
+    "content": "To control severe bleeding, immediately apply firm, direct pressure to the wound using a clean cloth, sterile dressing, or your hand. Elevate the bleeding limb above the level of the heart if there is no suspicion of a bone fracture. Do not remove any dressing that has soaked through with blood; instead, place more clean dressing material directly over the top and keep pressing. If bleeding is life-threatening and cannot be controlled by direct pressure, apply a tourniquet 2-3 inches above the wound on the arm or leg. Do not place a tourniquet directly over a joint or a wound. Tighten it until the bleeding stops and write the exact time of application on the patient's forehead.",
+    "tags": ["bleeding", "hemorrhage", "arterial", "tourniquet", "trauma"]
+  },
+  {
+    "title": "Basic Life Support & CPR for Adults",
+    "source": "Red Cross Emergency CPR Guidelines 2025",
+    "content": "If an adult is unresponsive and not breathing or only gasping, immediately call for emergency services. Place the patient flat on their back on a firm surface. Place the heel of one hand in the center of their chest (on the lower half of the breastbone) and the other hand on top, interlocking your fingers. Perform high-quality chest compressions at a rate of 100 to 120 compressions per minute, pressing down at least 2 inches (5 cm). Allow the chest to fully recoil after each compression. If trained, deliver 2 rescue breaths after every 30 compressions, tilting the head back and lifting the chin to open the airway. If untrained, perform continuous hands-only chest compressions until help arrives.",
+    "tags": ["cpr", "cardiac arrest", "unresponsive", "resuscitation", "heart"]
+  },
+  {
+    "title": "Traumatic Head Injury and Concussion Care",
+    "source": "WHO Head Trauma Guidelines",
+    "content": "For a victim who has suffered a head injury, assume there is a potential spinal cord or neck injury as well. Keep the victim completely still and do not move their head or neck unless absolutely necessary for safety. If the victim is conscious, keep them calm and monitor for symptoms of concussion: confusion, vomiting, dilated pupils, dizziness, memory loss, or loss of consciousness. If there is bleeding from the head, apply light, direct pressure with a sterile cloth, but avoid applying pressure directly over a suspected skull fracture (indentation or soft spot). If the victim is unconscious but breathing normally, place them in the recovery position while maintaining manual spinal stabilization.",
+    "tags": ["head injury", "concussion", "spinal cord", "unconscious", "neck trauma"]
+  },
+  {
+    "title": "First Aid for Choking (Heimlich Maneuver)",
+    "source": "American Red Cross Choking Protocol 2024",
+    "content": "If a conscious adult or child is choking and unable to speak, cough, or breathe, perform the Heimlich maneuver. Stand behind the victim, wrap your arms around their waist, and lean them slightly forward. Make a fist with one hand and place it slightly above the victim's navel, well below the breastbone. Grasp your fist with your other hand and press into the victim's abdomen with quick, upward thrusts. Perform thrusts repeatedly until the obstruction is dislodged or the victim becomes unconscious. If the victim loses consciousness, lower them gently to the floor, call for emergency medical help, and immediately begin CPR compressions, checking the mouth for visible foreign objects before delivering rescue breaths.",
+    "tags": ["choking", "airway obstruction", "heimlich", "asphyxiation"]
+  },
+  {
+    "title": "Anaphylaxis & Severe Allergic Reactions",
+    "source": "WHO Emergency Immunology Section 4",
+    "content": "Anaphylaxis is a severe, life-threatening allergic reaction that can cause hives, swelling of the throat or tongue, difficulty breathing, a rapid drop in blood pressure, and shock. The immediate treatment is the administration of epinephrine (adrenaline). If the patient possesses an auto-injector (EpiPen), assist them in using it immediately. Inject the epinephrine into the outer thigh (through clothing if necessary) and hold the device in place for 3 to 10 seconds. Massage the injection site for 10 seconds to speed absorption. Note the time of the injection. Keep the patient lying flat with their legs elevated 12 inches to improve blood flow, unless they are vomiting or having difficulty breathing, in which case keep them sitting up.",
+    "tags": ["anaphylaxis", "allergy", "epipen", "epinephrine", "shock"]
+  },
+  {
+    "title": "Heatstroke Treatment and Hyperthermia",
+    "source": "Red Cross Extreme Weather Guidelines",
+    "content": "Heatstroke is a medical emergency characterized by a body temperature above 104°F (40°C), altered mental state (confusion, agitation, slurred speech), and hot, dry, or flushed skin. Immediately move the victim to a cool, shaded environment or air-conditioned room. Call for emergency medical services. Cool the victim rapidly using whatever methods are available: immerse them in a cold water bath, spray them with cool water and fan them, or place ice packs or cold, wet towels on their head, neck, armpits, and groin. Monitor their breathing and consciousness closely. Do not give the victim anything to drink if they are confused or unconscious, as it poses a severe choking risk.",
+    "tags": ["heatstroke", "hyperthermia", "cooling", "dehydration", "heat"]
+  },
+  {
+    "title": "Hypothermia and Cold Exposure Management",
+    "source": "WHO Environmental Trauma Manual",
+    "content": "Hypothermia occurs when the body's core temperature drops below 95°F (35°C). Symptoms include shivering, exhaustion, confusion, fumbling hands, slurred speech, and drowsiness. Move the victim out of the cold, wind, and wet conditions immediately. Gently remove any wet clothing and dry the victim. Warm the center of the body first (chest, neck, head, and groin) using warm, dry blankets, skin-to-skin contact, or warm compresses. Do not apply direct heat sources like hot water bottles or heat lamps directly to the skin, as this can cause severe burns or trigger irregular heart rhythms. If the victim is conscious and able to swallow easily, provide warm, sweet, non-alcoholic beverages.",
+    "tags": ["hypothermia", "cold exposure", "warming", "frostbite"]
+  },
+  {
+    "title": "Bone Fracture and Joint Dislocation Stabilization",
+    "source": "WHO Orthopedic Emergency Procedures",
+    "content": "For a suspected bone fracture or joint dislocation, the primary goal is immobilization to prevent further injury. Do not attempt to realign, push back, or straighten any broken bone or dislocated joint. If the skin is broken (open fracture), cover the wound with a sterile dressing to prevent infection, but do not touch or push on exposed bone. Stabilize the injured area by applying a splint above and below the injured joint using rolled newspapers, wooden boards, or heavy cardboard secured gently with bandages or cloth straps. Check the circulation below the splint (pulses, warmth, color) to ensure the splint is not wrapped too tightly. Apply cold packs wrapped in a cloth to reduce swelling and pain.",
+    "tags": ["fracture", "splint", "immobilization", "dislocation", "broken bone"]
+  },
+  {
+    "title": "Chemical, Thermal, and Electrical Burns Care",
+    "source": "Red Cross Burn Management Guidelines 2024",
+    "content": "For thermal burns (caused by fire or heat), immediately cool the burn under cool (not ice-cold), gently running tap water for at least 10 to 20 minutes. Do not apply ice, butter, ointments, or home remedies, as they trap heat and worsen tissue damage. Remove loose jewelry or clothing from the burned area, but do not pull away clothing that is stuck to the skin. Cover the burn loosely with a sterile, non-stick bandage or clean plastic cling wrap to prevent infection and air exposure. For chemical burns, brush off dry chemicals and flush the area with copious amounts of water for 20+ minutes. For electrical burns, ensure the power source is disconnected before touching the victim, cover burn entry/exit wounds, and prepare for CPR.",
+    "tags": ["burns", "thermal", "chemical", "electrical", "cooling"]
+  },
+  {
+    "title": "Snakebite & Venomous Bite First Aid",
+    "source": "WHO Venomous Snakebite Protocols",
+    "content": "If a person is bitten by a venomous snake, remain calm and reassure the victim to prevent rapid heart rate, which spreads the venom faster. Immediately immobilize the bitten limb using a splint or bandage and keep the bite site below the level of the heart. Gently wash the bite area with soap and water, and cover it with a clean, dry dressing. Do not cut the wound, do not attempt to suck out the venom, do not apply a tourniquet, and do not apply ice, as these methods are extremely harmful and increase tissue necrosis. Remove rings, bracelets, or tight clothing from the bitten limb, as severe swelling is likely. Note the time of the bite and try to remember or photograph the snake's appearance for antivenom selection.",
+    "tags": ["snakebite", "venom", "immobilize", "swelling", "poison"]
+  },
+  {
+    "title": "Shock Management and Prevention",
+    "source": "WHO Trauma Response Protocol Section 3.2",
+    "content": "Shock is a life-threatening condition resulting from inadequate blood flow throughout the body, often caused by severe bleeding, allergic reactions, heart problems, or trauma. Symptoms include pale, cold, clammy skin, a rapid pulse, rapid breathing, dizziness, and confusion. Call for immediate emergency services. Have the patient lie flat on their back. Elevate their feet and legs approximately 12 inches (30 cm) to encourage blood flow to the vital organs, unless they have a suspected head, neck, spinal, or leg injury. Keep the patient warm and comfortable by covering them with a blanket. Do not give the victim anything to eat or drink, and monitor their airway, breathing, and circulation constantly.",
+    "tags": ["shock", "hypovolemia", "elevation", "low blood pressure", "trauma"]
+  },
+  {
+    "title": "First Aid for Stroke Symptoms (F.A.S.T.)",
+    "source": "American Stroke Association Guidelines",
+    "content": "Recognize the signs of a stroke immediately using the F.A.S.T. acronym. F - Face Drooping: Ask the person to smile. Does one side of the face droop or is it numb? A - Arm Weakness: Ask the person to raise both arms. Does one arm drift downward? S - Speech Difficulty: Ask the person to repeat a simple sentence. Is their speech slurred or strange? T - Time to call emergency help: If the person shows any of these symptoms, call emergency services immediately, even if the symptoms disappear. Note the exact time when the symptoms first appeared, as this is vital for clot-busting medication eligibility. Keep the person resting quietly and do not give them any aspirin, food, or drinks.",
+    "tags": ["stroke", "fast", "face drooping", "speech difficulty", "brain"]
+  },
+  {
+    "title": "Heart Attack Symptoms and Initial Response",
+    "source": "AHA Emergency Cardiovascular Care",
+    "content": "A heart attack occurs when blood flow to a part of the heart muscle is blocked. Common symptoms include pressure, tightness, squeezing, or pain in the chest that may spread to the shoulders, neck, jaw, arms, or back, along with shortness of breath, cold sweat, dizziness, or nausea. Call emergency services immediately. Have the victim sit down, rest, and try to remain calm. If the victim is not allergic and is conscious, have them chew and swallow one adult aspirin (325 mg) or 2-4 low-dose baby aspirins (81 mg each), as this can thin the blood and improve outcomes. If the victim loses consciousness and stops breathing normally, immediately begin chest compressions and CPR.",
+    "tags": ["heart attack", "myocardial infarction", "chest pain", "aspirin", "cpr"]
+  },
+  {
+    "title": "Seizure & Convulsion Safety Procedures",
+    "source": "WHO Neurological Emergency Protocols",
+    "content": "If a person is experiencing a seizure or convulsion, your primary goal is to protect them from injury. Help the person to the ground if they are standing, and gently clear the surrounding area of any hard or sharp objects. Place something soft, like a folded jacket or towel, under their head. Do not hold the person down or attempt to control their movements. Do not insert anything into the person's mouth (including fingers, spoons, or wallets), as this can damage teeth or block the airway. Loosen tight clothing around their neck, such as ties or collars. Once the shaking stops, gently roll the person onto their side into the recovery position to keep their airway clear, and stay with them until they are fully awake and alert.",
+    "tags": ["seizure", "convulsion", "epilepsy", "safety", "recovery position"]
+  },
+  {
+    "title": "Poisoning and Chemical Ingestion Action",
+    "source": "WHO Poison Control Guidelines",
+    "content": "For suspected poisoning or chemical ingestion, gather the container or substance if possible to identify it for medical professionals. Call emergency services and poison control immediately. If the person has swallowed a chemical, do not induce vomiting unless explicitly instructed to do so by a poison control specialist or medical doctor, as vomiting corrosive substances can cause secondary chemical burns to the esophagus and airway. If the chemical is on their skin or in their eyes, flush immediately with large volumes of running water for at least 15 to 20 minutes. If the person is unconscious or drowsy, lay them on their side in the recovery position and monitor their breathing continuously.",
+    "tags": ["poisoning", "chemical ingestion", "toxic", "flush", "corrosive"]
+  },
+  {
+    "title": "Asthma Attack and Acute Respiratory Distress",
+    "source": "WHO Asthma Management Manual",
+    "content": "An acute asthma attack causes severe wheezing, coughing, rapid shallow breathing, and chest tightness. Help the person sit in an upright, comfortable position, which eases breathing compared to lying down. Assist them in using their quick-relief inhaler (usually albuterol/salbutamol, blue cap). Shake the inhaler, insert it into their mouth, and administer 2 to 4 puffs, with the person holding their breath for 10 seconds after each inhalation. Keep them calm, as anxiety increases muscle tightness in the airways. If symptoms do not improve within 5 to 10 minutes, or if they have difficulty speaking, blue-tinged lips, or are gasping for air, immediately call for emergency services and administer another dose of the inhaler.",
+    "tags": ["asthma", "respiratory distress", "inhaler", "albuterol", "breathing"]
+  },
+  {
+    "title": "Diabetic Emergency & Hypoglycemia",
+    "source": "Red Cross Endocrine Emergency Guide",
+    "content": "Diabetic emergencies are frequently caused by hypoglycemia (extremely low blood sugar). Symptoms include shakiness, sweating, pale skin, confusion, irritability, headache, rapid heartbeat, and dizziness. If the person is conscious, alert, and able to swallow safely, immediately give them fast-acting sugar: 4 ounces of fruit juice, regular soda, 3 to 4 glucose tablets, or 5 to 6 pieces of hard candy. Wait 15 minutes and check if their symptoms improve. If they do not, provide more sugar. If the person is confused, incoherent, or unconscious, do not attempt to feed them or give them liquid sugar, as they can easily choke. Call emergency services immediately and place them in the recovery position.",
+    "tags": ["diabetes", "hypoglycemia", "low blood sugar", "insulin", "glucose"]
+  },
+  {
+    "title": "Spinal Injury and Spine Board Safety",
+    "source": "WHO Spinal Trauma Protocols",
+    "content": "A spinal cord injury should be suspected in cases of high-impact trauma, motor vehicle crashes, falls from heights, or head injuries. Symptoms include severe back/neck pain, numbness, tingling, weakness, or paralysis in limbs. Your absolute priority is to prevent any movement of the victim's head, neck, or spine. Do not move the victim unless they are in immediate danger of fire, explosion, or drowning. Manually stabilize their head by holding both sides of their head in the position you found them, keeping the head, neck, and torso aligned. Reassure the victim and tell them not to move. If they must be rolled due to vomiting or breathing issues, use the log-roll technique with multiple rescuers.",
+    "tags": ["spinal injury", "neck injury", "spine", "paralysis", "stabilization"]
+  },
+  {
+    "title": "Drowning & Submersion First Aid",
+    "source": "WHO Water Safety & Resuscitation Manual",
+    "content": "For a victim of drowning, safely remove them from the water as quickly as possible. If the victim is unresponsive and not breathing, immediately call emergency services and begin CPR. For drowning victims, the airway is filled with water, making rescue breaths extremely critical. Open the airway with a head-tilt chin-lift, and deliver 5 initial rescue breaths. If the chest rises, proceed with standard CPR: 30 chest compressions followed by 2 rescue breaths. Repeat this cycle. If the victim vomits (which is common in drowning), turn their body onto their side as a unit, clear their mouth with your fingers or a cloth, then return them to their back and continue CPR compressions.",
+    "tags": ["drowning", "submersion", "rescue breaths", "cpr", "water rescue"]
+  },
+  {
+    "title": "Severe Bleeding from Internal Trauma",
+    "source": "WHO Internal Hemorrhage Guidelines",
+    "content": "Internal bleeding occurs when blood leaks from blood vessels inside the body, usually caused by high-impact trauma, crush injuries, or fractures of the pelvis or femur. Signs include bruising, swelling, a hard or painful abdomen, coughing up blood, vomiting blood, and symptoms of shock (cold, clammy skin, confusion, rapid weak pulse). Internal bleeding cannot be controlled by direct pressure and is a critical medical emergency. Call emergency services immediately. Help the victim lie flat, elevate their legs 12 inches if there is no spinal or leg injury, cover them with a blanket to prevent heat loss and treat for shock. Do not allow them to eat or drink anything.",
+    "tags": ["internal bleeding", "internal hemorrhage", "trauma", "shock", "crush"]
+  }
+]
