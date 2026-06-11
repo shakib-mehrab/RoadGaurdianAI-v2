@@ -132,7 +132,7 @@ roadguardian-ai/
 ## ⚙️ Installation & Running the Stack
 
 ### Prerequisites
-* **Node.js**: v18+
+* **Node.js**: v20+
 * **Python**: v3.10+
 * **ChromaDB** and **SentenceTransformers** python packages.
 
