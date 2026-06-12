@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard'
 import HazardReport from './pages/HazardReport'
 import Accessibility from './pages/Accessibility'
 import DemoGraph from './pages/DemoGraph'
+import Bystander from './pages/Bystander'
 
 function App() {
   const { setPwaInstallPrompt, setPwaInstalled } = useStore()
@@ -65,6 +66,7 @@ function App() {
           <Route path="/hazard" element={<HazardReport />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/demo-graph" element={<DemoGraph />} />
+          <Route path="/bystander" element={<Bystander />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

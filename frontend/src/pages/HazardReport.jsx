@@ -92,16 +92,20 @@ export default function HazardReport() {
         const descLower = description.toLowerCase()
         let hazard_type = 'pothole'
         let severity = 'medium'
+        let remediation = 'Pothole obstruction. Forwarding telemetry coordinates to municipal maintenance log.'
 
         if (descLower.includes('accident') || descLower.includes('crash')) {
           hazard_type = 'accident_scene'
           severity = 'high'
+          remediation = 'Severe accident scene detected. Emergency dispatch route bypass calculated.'
         } else if (descLower.includes('water') || descLower.includes('flood')) {
           hazard_type = 'flooding'
           severity = 'high'
+          remediation = 'Waterlogging threat. Direct local civic authorities to deploy drainage teams.'
         } else if (descLower.includes('obstruction') || descLower.includes('debris')) {
           hazard_type = 'road_debris'
           severity = 'medium'
+          remediation = 'Obstruction logged on active route lanes. High speed braking hazard.'
         }
 
         const simulatedResult = {
@@ -110,25 +114,31 @@ export default function HazardReport() {
           hazard_type,
           severity,
           location: { lat: parseFloat(lat), lng: parseFloat(lng) },
-          ai_confidence: 0.89,
-          remediation_suggestion: 'Local model simulation complete. Pin added to map.'
+          ai_confidence: 0.94,
+          remediation_suggestion: remediation
         }
         setReportResult(simulatedResult)
         addHazard({
           hazard_type,
           severity,
           location: { lat: parseFloat(lat), lng: parseFloat(lng) },
-          ai_confidence: 0.89
+          ai_confidence: 0.94
         })
-      }, 1000)
-    } finally {
-      setLoading(false)
+        setLoading(false)
+      }, 1800)
     }
   }
 
   const handleRouteAnalyze = (e) => {
     e.preventDefault()
     analyzeRoute(routeFrom, routeTo)
+  }
+
+  const handleLoadDemoHazard = () => {
+    setPreview('https://images.unsplash.com/photo-1515162305285-0293e4767cc2?auto=format&fit=crop&q=80&w=600')
+    setDescription('Deep pothole crater detected in center lane. Structural risk to two-wheelers.')
+    setLat('23.6922')
+    setLng('90.5186')
   }
 
   return (
@@ -198,6 +208,30 @@ export default function HazardReport() {
               Submit Telemetry Report
             </h2>
 
+            {/* Simulation Demo Banner */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(10, 132, 255, 0.08)', border: '1px solid rgba(10, 132, 255, 0.25)', borderRadius: 'var(--radius-md)', padding: '8px 12px', marginTop: 4 }}>
+              <div style={{ textAlign: 'left' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--blue-400)' }}>Demo Mode Anomaly</span>
+                <p style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Autofill deep pothole coordinates & demo photo.</p>
+              </div>
+              <button 
+                type="button"
+                onClick={handleLoadDemoHazard}
+                style={{
+                  padding: '5px 10px',
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  background: 'var(--blue-500)',
+                  border: 'none',
+                  color: '#fff',
+                  borderRadius: 'var(--radius-sm)',
+                  cursor: 'pointer'
+                }}
+              >
+                Autofill
+              </button>
+            </div>
+
             {/* Image upload */}
             <div>
               <label style={{ display: 'block', fontSize: isMobile ? '0.75rem' : '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: isMobile ? 4 : 8, textTransform: 'uppercase' }}>
@@ -230,7 +264,52 @@ export default function HazardReport() {
                   onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
                 >
                   {preview ? (
-                    <img src={preview} alt="Upload Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                      <img src={preview} alt="Upload Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {/* Bounding box overlay */}
+                      {reportResult && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '25%',
+                          left: '20%',
+                          width: '55%',
+                          height: '45%',
+                          border: '3px solid var(--amber-400)',
+                          borderRadius: 4,
+                          boxShadow: '0 0 10px rgba(255, 214, 10, 0.4)',
+                          pointerEvents: 'none',
+                          boxSizing: 'border-box'
+                        }}>
+                          <span style={{
+                            position: 'absolute',
+                            top: -20,
+                            left: -3,
+                            background: 'var(--amber-400)',
+                            color: '#000',
+                            fontSize: '0.62rem',
+                            fontWeight: 900,
+                            padding: '2px 6px',
+                            textTransform: 'uppercase',
+                            borderRadius: '2px 2px 0 0',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {reportResult.hazard_type.replace('_', ' ')} ({(reportResult.ai_confidence * 100).toFixed(0)}%)
+                          </span>
+                        </div>
+                      )}
+                      {/* Scanning Line */}
+                      {loading && (
+                        <div style={{
+                          position: 'absolute',
+                          left: 0,
+                          width: '100%',
+                          height: '3px',
+                          background: 'linear-gradient(to right, transparent, var(--blue-400), transparent)',
+                          boxShadow: '0 0 8px var(--blue-400)',
+                          animation: 'scan-motion 2s linear infinite'
+                        }} />
+                      )}
+                    </div>
                   ) : (
                     <div style={{ textAlign: 'center', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? 4 : 8 }}>
                       <Camera size={isMobile ? 24 : 32} style={{ color: 'var(--text-muted)' }} />
@@ -543,6 +622,13 @@ export default function HazardReport() {
         </div>
       )}
 
+      <style>{`
+        @keyframes scan-motion {
+          0% { top: 0%; }
+          50% { top: 100%; }
+          100% { top: 0%; }
+        }
+      `}</style>
     </div>
   )
 }

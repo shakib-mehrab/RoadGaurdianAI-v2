@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore'
-import { Home, ShieldAlert, Activity, AlertOctagon, Settings } from 'lucide-react'
+import { Home, ShieldAlert, Activity, AlertOctagon, Settings, Eye } from 'lucide-react'
 
 export default function BottomNav() {
   const location = useLocation()
@@ -10,6 +10,7 @@ export default function BottomNav() {
   const tabs = [
     { id: 'home', path: '/', label: 'Home', icon: Home },
     { id: 'sos', path: '/emergency', label: 'SOS Dispatch', icon: ShieldAlert, badge: sosActive },
+    { id: 'bystander', path: '/bystander', label: 'Bystander', icon: Eye },
     { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: Activity },
     { id: 'hazard', path: '/hazard', label: 'Hazards', icon: AlertOctagon },
     { id: 'accessibility', path: '/accessibility', label: 'Settings', icon: Settings }

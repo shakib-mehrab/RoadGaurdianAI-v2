@@ -10,11 +10,27 @@ import MCPToolsPanel from '../components/MCPToolsPanel'
 import { Activity, AlertTriangle, Play, RefreshCw, BarChart2, Briefcase, MapPin, ShieldAlert, Bike, Car, Navigation, Siren, Copy, Check } from 'lucide-react'
 
 function RescueNetworkFeeds() {
-  const { rescueFeeds } = useStore()
+  const { rescueFeeds, userProfile, location } = useStore()
   const [feedTab, setFeedTab] = useState('family') // 'family' | 'community'
 
   const familyStatus = rescueFeeds?.familyStatus || []
   const responders = rescueFeeds?.responders || []
+
+  const handleSendWhatsAppAlert = () => {
+    const phone = userProfile?.emergencyContactPhone ? userProfile.emergencyContactPhone.replace(/[^\d+]/g, '') : ''
+    if (!phone || phone.includes('X') || phone.length < 8) {
+      alert('⚠️ Invalid Emergency Contact Number! Please navigate to "Accessibility & Vitals Center" to configure a valid phone number.')
+      return
+    }
+    const lat = location?.lat?.toFixed(4) ?? '23.6922'
+    const lng = location?.lng?.toFixed(4) ?? '90.5186'
+    const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`
+    
+    const message = `🚨 *ROADGUARD EMERGENCY ALERT* 🚨\n\n*Victim:* ${userProfile?.name || 'Riya Akter'}\n*Age / Blood:* ${userProfile?.age || 24} yrs / ${userProfile?.bloodGroup || 'O+'}\n*Accident Location:* ${lat}, ${lng}\n*Google Maps:* ${mapsLink}\n\n*Status:* Critical, dispatched ambulance AMB-204 from Dhaka Medical College Hospital.\n\n*Mission Control Dashboard:* ${window.location.origin}/dashboard`
+    
+    const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent(message)}`
+    window.open(url, '_blank')
+  }
 
   return (
     <div className="glass-card animate-float-up" style={{ padding: 20, border: '1px solid var(--border)' }}>
@@ -54,19 +70,48 @@ function RescueNetworkFeeds() {
 
       {/* Content */}
       {feedTab === 'family' ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto' }} className="scroll-y">
-          {familyStatus.length === 0 ? (
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center', padding: 8 }}>
-              Scanning emergency contacts network...
-            </div>
-          ) : (
-            familyStatus.map((status, idx) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', background: 'rgba(255,255,255,0.02)', padding: '8px 10px', borderRadius: 4, border: '1px solid var(--border)', fontSize: '0.75rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>{status.text}</span>
-                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}>{status.time}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {/* WhatsApp Alert Button */}
+          <button
+            onClick={handleSendWhatsAppAlert}
+            style={{
+              padding: '10px 12px',
+              background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+              border: '1px solid #128C7E',
+              color: '#fff',
+              fontWeight: 800,
+              borderRadius: 'var(--radius-md)',
+              fontSize: '0.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(37, 211, 102, 0.15)',
+              transition: 'transform 0.1s ease',
+              width: '100%',
+              marginBottom: 4
+            }}
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)' }}
+            onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+          >
+            <span>💬</span> Send SOS Alert via WhatsApp
+          </button>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto' }} className="scroll-y">
+            {familyStatus.length === 0 ? (
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center', padding: 8 }}>
+                Scanning emergency contacts network...
               </div>
-            ))
-          )}
+            ) : (
+              familyStatus.map((status, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', background: 'rgba(255,255,255,0.02)', padding: '8px 10px', borderRadius: 4, border: '1px solid var(--border)', fontSize: '0.75rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>{status.text}</span>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', flexShrink: 0, marginLeft: 8 }}>{status.time}</span>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto' }} className="scroll-y">
@@ -684,6 +729,22 @@ export default function Dashboard() {
   } = useStore()
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
+  const handleSendWhatsAppAlert = () => {
+    const phone = userProfile?.emergencyContactPhone ? userProfile.emergencyContactPhone.replace(/[^\d+]/g, '') : ''
+    if (!phone || phone.includes('X') || phone.length < 8) {
+      alert('⚠️ Invalid Emergency Contact Number! Please navigate to "Accessibility & Vitals Center" to configure a valid phone number.')
+      return
+    }
+    const lat = location?.lat?.toFixed(4) ?? '23.6922'
+    const lng = location?.lng?.toFixed(4) ?? '90.5186'
+    const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`
+    
+    const message = `🚨 *ROADGUARD EMERGENCY ALERT* 🚨\n\n*Victim:* ${userProfile?.name || 'Riya Akter'}\n*Age / Blood:* ${userProfile?.age || 24} yrs / ${userProfile?.bloodGroup || 'O+'}\n*Accident Location:* ${lat}, ${lng}\n*Google Maps:* ${mapsLink}\n\n*Status:* Critical, dispatched ambulance AMB-204 from Dhaka Medical College Hospital.\n\n*Mission Control Dashboard:* ${window.location.origin}/dashboard`
+    
+    const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent(message)}`
+    window.open(url, '_blank')
+  }
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768)
@@ -795,11 +856,36 @@ export default function Dashboard() {
                   <span style={{ fontSize: '0.65rem', color: 'var(--red-400)', fontWeight: 700 }}>LIVE INCIDENT</span>
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 800 }}>#RG-2026-0147 (Kanchpur Bridge, Dhaka)</h3>
                 </div>
-                <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', fontSize: '0.78rem' }}>
+                <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', fontSize: '0.78rem', alignItems: 'center' }}>
                   <span>Patient: <strong>{userProfile.name} (Deaf)</strong></span>
                   <span>Blood: <strong style={{ color: 'var(--red-400)' }}>{userProfile.bloodGroup}</strong></span>
                   <span>Ambulance: <strong>AMB-204 (ETA 6m)</strong></span>
                   <span>999 Case: <strong>999-INC-28491</strong></span>
+                  
+                  <button
+                    onClick={handleSendWhatsAppAlert}
+                    style={{
+                      background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                      border: '1.5px solid #128C7E',
+                      color: '#fff',
+                      fontWeight: 800,
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.72rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '4px 10px',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(37, 211, 102, 0.15)',
+                      transition: 'transform 0.1s ease',
+                      outline: 'none',
+                      marginLeft: 8
+                    }}
+                    onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.96)' }}
+                    onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+                  >
+                    💬 WhatsApp Alert
+                  </button>
                 </div>
               </div>
               

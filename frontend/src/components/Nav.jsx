@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom'
 import { useStore } from '../store/useStore'
 import { useOffline } from '../hooks/useOffline'
-import { Shield, Home, ShieldAlert, Activity, AlertOctagon, Network, Sliders } from 'lucide-react'
+import { Shield, Home, ShieldAlert, Activity, AlertOctagon, Network, Sliders, Eye } from 'lucide-react'
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', exact: true, icon: Home },
   { to: '/emergency', label: 'Emergency Dispatch', icon: ShieldAlert },
   { to: '/dashboard', label: 'Mission Control', icon: Activity },
+  { to: '/bystander', label: 'Bystander SOS', icon: Eye },
   { to: '/hazard', label: 'Hazard Report', icon: AlertOctagon },
   { to: '/demo-graph', label: 'Knowledge Graph', icon: Network },
   { to: '/accessibility', label: 'Accessibility', icon: Sliders },

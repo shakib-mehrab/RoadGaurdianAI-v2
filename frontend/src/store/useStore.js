@@ -122,6 +122,39 @@ Monitor breathing. Look for visual cues, since she is Deaf.
 
 *Ambulance ETA: 6 mins to Dhaka Medical.*`
 
+const DEFAULT_USER_PROFILE = {
+  name: 'Riya Akter',
+  age: 24,
+  location: 'Kanchpur Bridge, Dhaka',
+  occupation: 'University Student',
+  accessibilityNeed: 'Deaf User',
+  bloodGroup: 'O+',
+  emergencyContactName: 'Amina Akter',
+  emergencyContactRole: 'Mother',
+  emergencyContactPhone: '+880-171-XXX-XXXX',
+  preferredLanguage: 'bn', // বাংলা
+  accessibilityMode: 'deaf',
+  medicalNotes: 'No major chronic illness',
+  preferredHospital: 'Dhaka Medical College Hospital',
+  allergies: 'Penicillin',
+  chronicDiseases: 'Asthma',
+  medications: 'Albuterol Inhaler',
+  insuranceProvider: 'Pragati Insurance Ltd.',
+  policyNumber: 'PRG-2026-88491A'
+}
+
+const getStoredProfile = () => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const stored = localStorage.getItem('roadguardian_profile')
+      return stored ? JSON.parse(stored) : DEFAULT_USER_PROFILE
+    }
+  } catch (e) {
+    console.error('Error loading profile:', e)
+  }
+  return DEFAULT_USER_PROFILE
+}
+
 export const useStore = create((set, get) => ({
   // ---- WebSocket State ----
   wsConnected: false,
@@ -281,29 +314,16 @@ export const useStore = create((set, get) => ({
     { id: 'rider_3', name: 'Aung Kyaw (Grab Bike)', phone: '+880-173-555-666', dist: '480m', type: 'Grab Rider', lat: 23.6942, lng: 90.5198, status: 'Online', rating: 4.7 }
   ],
 
-  userProfile: {
-    name: 'Riya Akter',
-    age: 24,
-    location: 'Kanchpur Bridge, Dhaka',
-    occupation: 'University Student',
-    accessibilityNeed: 'Deaf User',
-    bloodGroup: 'O+',
-    emergencyContactName: 'Amina Akter',
-    emergencyContactRole: 'Mother',
-    emergencyContactPhone: '+880-171-XXX-XXXX',
-    preferredLanguage: 'bn', // বাংলা
-    accessibilityMode: 'deaf',
-    medicalNotes: 'No major chronic illness',
-    preferredHospital: 'Dhaka Medical College Hospital',
-    allergies: 'Penicillin',
-    chronicDiseases: 'Asthma',
-    medications: 'Albuterol Inhaler',
-    insuranceProvider: 'Pragati Insurance Ltd.',
-    policyNumber: 'PRG-2026-88491A'
-  },
-  updateProfile: (updated) => set(s => ({
-    userProfile: { ...s.userProfile, ...updated }
-  })),
+  userProfile: getStoredProfile(),
+  updateProfile: (updated) => set(s => {
+    const newProfile = { ...s.userProfile, ...updated }
+    try {
+      localStorage.setItem('roadguardian_profile', JSON.stringify(newProfile))
+    } catch (e) {
+      console.error('Error saving profile:', e)
+    }
+    return { userProfile: newProfile }
+  }),
   rescueFeeds: {
     familyStatus: [],
     responders: []

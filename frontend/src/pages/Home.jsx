@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore'
-import { ShieldAlert, LayoutDashboard, Cpu, BookOpen, Radio, Accessibility, WifiOff, Scan, BarChart2, Briefcase, TrendingUp, Globe, Users, Building2 } from 'lucide-react'
+import { ShieldAlert, LayoutDashboard, Cpu, BookOpen, Radio, Accessibility, WifiOff, Scan, BarChart2, Briefcase, TrendingUp, Globe, Users, Building2, Eye } from 'lucide-react'
 
 const STATS = [
   { value: '700K+', label: 'Road deaths/year', sub: 'across BIMSTEC nations', color: 'var(--red-400)' },
@@ -112,6 +112,15 @@ export default function Home() {
           >
             <ShieldAlert size={18} />
             <span>{sosActive ? 'View Active Emergency' : 'Trigger Emergency Demo'}</span>
+          </button>
+          <button
+            id="home-bystander-cta"
+            className="btn"
+            onClick={() => navigate('/bystander')}
+            style={{ fontSize: '1rem', padding: '14px 32px', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255, 159, 10, 0.15)', border: '1px solid var(--amber-400)', color: 'var(--amber-400)', cursor: 'pointer' }}
+          >
+            <Eye size={18} />
+            <span>I am a Bystander (SOS)</span>
           </button>
           <button
             id="home-dashboard-cta"
