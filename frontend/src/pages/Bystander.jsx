@@ -65,7 +65,7 @@ export default function Bystander() {
 
   // Pre-load a mock crash picture option for demo convenience
   const handleSimulateCrashPhoto = () => {
-    setPhotoPreview('https://images.unsplash.com/photo-1590301157890-4810ed352733?auto=format&fit=crop&q=80&w=600')
+    setPhotoPreview('/simulated_crash.png')
     setDescription('Motorcycle crash at the junction. Rider thrown off, unresponsive, head laceration bleeding on asphalt.')
   }
 
@@ -120,7 +120,7 @@ export default function Bystander() {
     const sent = sendSOS(payload)
     if (!sent) {
       console.log('WS not connected. Running local mock trigger.')
-      triggerSOS(gpsCoords)
+      triggerSOS(gpsCoords, false, true)
     }
     navigate('/dashboard')
   }

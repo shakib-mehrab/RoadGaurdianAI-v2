@@ -10,7 +10,7 @@ import MCPToolsPanel from '../components/MCPToolsPanel'
 import { Activity, AlertTriangle, Play, RefreshCw, BarChart2, Briefcase, MapPin, ShieldAlert, Bike, Car, Navigation, Siren, Copy, Check, MessageSquare, Sliders } from 'lucide-react'
 
 function RescueNetworkFeeds() {
-  const { rescueFeeds, userProfile, location } = useStore()
+  const { rescueFeeds, userProfile, location, a11yMode } = useStore()
   const [feedTab, setFeedTab] = useState('family') // 'family' | 'community'
   const [showManualWhatsApp, setShowManualWhatsApp] = useState(false)
 
@@ -31,7 +31,11 @@ function RescueNetworkFeeds() {
     const lng = location?.lng?.toFixed(4) ?? '90.5186'
     const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`
     
-    const message = `🚨 *ROADGUARD EMERGENCY ALERT* 🚨\n\n*Victim:* ${userProfile?.name || 'Riya Akter'}\n*Age / Blood:* ${userProfile?.age || 24} yrs / ${userProfile?.bloodGroup || 'O+'}\n*Accident Location:* ${lat}, ${lng}\n*Google Maps:* ${mapsLink}\n\n*Status:* Critical, dispatched ambulance AMB-204 from Dhaka Medical College Hospital.\n\n*Mission Control Dashboard:* ${window.location.origin}/dashboard`
+    const isBystander = a11yMode === 'bystander'
+    const victimName = isBystander ? 'Unknown Victim (Bystander SOS)' : (userProfile?.name || 'Riya Akter')
+    const victimVitals = isBystander ? 'Unknown / Unknown' : `${userProfile?.age || 24} yrs / ${userProfile?.bloodGroup || 'O+'}`
+
+    const message = `🚨 *ROADGUARD EMERGENCY ALERT* 🚨\n\n*Victim:* ${victimName}\n*Age / Blood:* ${victimVitals}\n*Accident Location:* ${lat}, ${lng}\n*Google Maps:* ${mapsLink}\n\n*Status:* Critical, dispatched ambulance AMB-204 from Dhaka Medical College Hospital.\n\n*Mission Control Dashboard:* ${window.location.origin}/dashboard`
     
     const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent(message)}`
     window.open(url, '_blank')
@@ -754,7 +758,7 @@ export default function Dashboard() {
   const { 
     sosActive, wsConnected, resetIncident, triggerSOS, location, 
     userProfile, partnerIntegrations, incidentState, rescueFeeds, 
-    insuranceClaim, fileInsuranceClaim, sosTimestamp 
+    insuranceClaim, fileInsuranceClaim, sosTimestamp, a11yMode
   } = useStore()
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
@@ -768,7 +772,11 @@ export default function Dashboard() {
     const lng = location?.lng?.toFixed(4) ?? '90.5186'
     const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`
     
-    const message = `🚨 *ROADGUARD EMERGENCY ALERT* 🚨\n\n*Victim:* ${userProfile?.name || 'Riya Akter'}\n*Age / Blood:* ${userProfile?.age || 24} yrs / ${userProfile?.bloodGroup || 'O+'}\n*Accident Location:* ${lat}, ${lng}\n*Google Maps:* ${mapsLink}\n\n*Status:* Critical, dispatched ambulance AMB-204 from Dhaka Medical College Hospital.\n\n*Mission Control Dashboard:* ${window.location.origin}/dashboard`
+    const isBystander = a11yMode === 'bystander'
+    const victimName = isBystander ? 'Unknown Victim (Bystander SOS)' : (userProfile?.name || 'Riya Akter')
+    const victimVitals = isBystander ? 'Unknown / Unknown' : `${userProfile?.age || 24} yrs / ${userProfile?.bloodGroup || 'O+'}`
+
+    const message = `🚨 *ROADGUARD EMERGENCY ALERT* 🚨\n\n*Victim:* ${victimName}\n*Age / Blood:* ${victimVitals}\n*Accident Location:* ${lat}, ${lng}\n*Google Maps:* ${mapsLink}\n\n*Status:* Critical, dispatched ambulance AMB-204 from Dhaka Medical College Hospital.\n\n*Mission Control Dashboard:* ${window.location.origin}/dashboard`
     
     const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent(message)}`
     window.open(url, '_blank')
@@ -886,8 +894,8 @@ export default function Dashboard() {
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 800 }}>#RG-2026-0147 (Kanchpur Bridge, Dhaka)</h3>
                 </div>
                 <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', fontSize: '0.78rem', alignItems: 'center' }}>
-                  <span>Patient: <strong>{userProfile.name} (Deaf)</strong></span>
-                  <span>Blood: <strong style={{ color: 'var(--red-400)' }}>{userProfile.bloodGroup}</strong></span>
+                  <span>Patient: <strong>{a11yMode === 'bystander' ? 'Unknown Victim' : `${userProfile.name} (Deaf)`}</strong></span>
+                  <span>Blood: <strong style={{ color: 'var(--red-400)' }}>{a11yMode === 'bystander' ? 'Unknown' : userProfile.bloodGroup}</strong></span>
                   <span>Ambulance: <strong>AMB-204 (ETA 6m)</strong></span>
                   <span>999 Case: <strong>999-INC-28491</strong></span>
                   
@@ -1070,8 +1078,8 @@ export default function Dashboard() {
               <div>🩺 <strong>AI Triage Severity:</strong> Critical (Score 87/100)</div>
               <div>🏥 <strong>Admitted Hospital:</strong> Dhaka Medical College Hospital</div>
               <div>🚗 <strong>Partner Ride ID:</strong> {partnerIntegrations.provider} {partnerIntegrations.rideId}</div>
-              <div>🛡️ <strong>Health Insurer:</strong> {userProfile.insuranceProvider || 'Pragati Insurance Ltd.'}</div>
-              <div>📜 <strong>Policy Number:</strong> {userProfile.policyNumber || 'PRG-2026-88491A'}</div>
+              <div>🛡️ <strong>Health Insurer:</strong> {a11yMode === 'bystander' ? 'N/A (Bystander Triggered)' : (userProfile.insuranceProvider || 'Pragati Insurance Ltd.')}</div>
+              <div>📜 <strong>Policy Number:</strong> {a11yMode === 'bystander' ? 'N/A (Bystander Triggered)' : (userProfile.policyNumber || 'PRG-2026-88491A')}</div>
             </div>
 
             {insuranceClaim?.status === 'submitted' ? (
@@ -1083,7 +1091,9 @@ export default function Dashboard() {
               </div>
             ) : (
               <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                Clicking submit compiles this dossier and transmits it via secure API endpoint to {userProfile.insuranceProvider || 'Pragati Insurance Ltd.'} for instant reimbursement assessment.
+                {a11yMode === 'bystander'
+                  ? 'Insurance claims are unavailable when an emergency is activated by a bystander witness because victim details are unknown.'
+                  : `Clicking submit compiles this dossier and transmits it via secure API endpoint to ${userProfile.insuranceProvider || 'Pragati Insurance Ltd.'} for instant reimbursement assessment.`}
               </p>
             )}
 
@@ -1100,9 +1110,9 @@ export default function Dashboard() {
                   onClick={() => fileInsuranceClaim({ insurer: userProfile.insuranceProvider || 'Pragati Insurance Ltd.', policy: userProfile.policyNumber || 'PRG-2026-88491A' })}
                   className="btn btn-primary"
                   style={{ flex: 1, minHeight: 40, fontSize: '0.82rem', background: 'var(--green-500)', borderColor: 'var(--green-600)', justifyContent: 'center' }}
-                  disabled={insuranceClaim?.status === 'submitting'}
+                  disabled={insuranceClaim?.status === 'submitting' || a11yMode === 'bystander'}
                 >
-                  {insuranceClaim?.status === 'submitting' ? 'Submitting Claims...' : 'Submit Dossier'}
+                  {insuranceClaim?.status === 'submitting' ? 'Submitting Claims...' : (a11yMode === 'bystander' ? 'Claims Disabled' : 'Submit Dossier')}
                 </button>
               )}
             </div>

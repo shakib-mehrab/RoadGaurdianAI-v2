@@ -717,7 +717,7 @@ export const useStore = create((set, get) => ({
   },
 
   // ---- SOS Trigger (mock orchestration) ----
-  triggerSOS: (location, silent = false) => {
+  triggerSOS: (location, silent = false, isBystander = false) => {
     const store = get()
     if (store.sosActive) return
 
@@ -736,13 +736,16 @@ export const useStore = create((set, get) => ({
       sosTimestamp: Date.now(),
       location: loc,
       silentSosMode: silent,
+      a11yMode: isBystander ? 'bystander' : (silent ? 'silent' : 'standard'),
       partnerRiders: updatedRiders,
       incidentState: 'DETECTED',
       rescueFeeds: {
         familyStatus: [
-          { time: 'Just now', text: silent 
-            ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts' 
-            : 'SOS broadcast initiated — scanning vital profiles...' }
+          { time: 'Just now', text: isBystander
+            ? 'SOS broadcast initiated by bystander witness — scanning scene details...'
+            : (silent 
+              ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts' 
+              : 'SOS broadcast initiated — scanning vital profiles...') }
         ],
         responders: []
       }
@@ -780,9 +783,11 @@ export const useStore = create((set, get) => ({
         rescueFeeds: {
           ...s.rescueFeeds,
           familyStatus: [
-            { time: 'Just now', text: s.silentSosMode 
-              ? 'Silent telemetry analysis dispatched to 999 desk' 
-              : 'Transmitted Medical ID to 999 Dispatch Desk' },
+            { time: 'Just now', text: s.a11yMode === 'bystander'
+              ? 'Transmitted crash details to 999 Dispatch Desk'
+              : (s.silentSosMode 
+                ? 'Silent telemetry analysis dispatched to 999 desk' 
+                : 'Transmitted Medical ID to 999 Dispatch Desk') },
             ...s.rescueFeeds.familyStatus
           ]
         }
@@ -806,15 +811,19 @@ export const useStore = create((set, get) => ({
         fMembers.forEach((m, i) => {
           dynamicFamilyNotifs.push({
             time: `${i + 1}s ago`,
-            text: s.silentSosMode
-              ? `${m.role} ${m.name} notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
-              : `${m.role} ${m.name} notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})`
+            text: s.a11yMode === 'bystander'
+              ? `Bystander's emergency contact ${m.name} (${m.role}) notified via SMS`
+              : (s.silentSosMode
+                ? `${m.role} ${m.name} notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
+                : `${m.role} ${m.name} notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})`)
           })
           dynamicFamilyNotifs.unshift({
             time: 'Just now',
-            text: s.silentSosMode
-              ? `${m.role} ${m.name} connected to Stealth Audio Stream`
-              : `${m.role} ${m.name} opened live tracking link`
+            text: s.a11yMode === 'bystander'
+              ? `Bystander's emergency contact ${m.name} (${m.role}) opened witness report`
+              : (s.silentSosMode
+                ? `${m.role} ${m.name} connected to Stealth Audio Stream`
+                : `${m.role} ${m.name} opened live tracking link`)
           })
         })
 
@@ -824,12 +833,16 @@ export const useStore = create((set, get) => ({
             familyStatus: [
               { time: 'Just now', text: 'Nearest partner rider (Md. Jalil, 150m away) diverted to crash scene to assist as emergency responder' },
               ...dynamicFamilyNotifs,
-              { time: '3s ago', text: s.silentSosMode
-                ? 'Stealth Live Audio Stream shared with 999 Desk'
-                : 'Transmitted Medical ID to 999 Dispatch Desk' },
-              { time: '4s ago', text: s.silentSosMode
-                ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to trusted contacts'
-                : 'SOS broadcast initiated — scanning vital profiles...' }
+              { time: '3s ago', text: s.a11yMode === 'bystander'
+                ? 'Transmitted crash details to 999 Dispatch Desk'
+                : (s.silentSosMode
+                  ? 'Stealth Live Audio Stream shared with 999 Desk'
+                  : 'Transmitted Medical ID to 999 Dispatch Desk') },
+              { time: '4s ago', text: s.a11yMode === 'bystander'
+                ? 'SOS broadcast initiated by bystander witness — scanning scene details...'
+                : (s.silentSosMode
+                  ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to trusted contacts'
+                  : 'SOS broadcast initiated — scanning vital profiles...') }
             ],
             responders: [
               { name: 'Rafiqul Islam', role: 'First Responder', dist: '30m', status: 'Arrived on-site', lat: loc.lat + 0.0003, lng: loc.lng - 0.0004 },
@@ -999,17 +1012,25 @@ export const useStore = create((set, get) => ({
         mcpTools: MOCK_MCP_TOOLS,
         rescueFeeds: {
           familyStatus: [
-            { time: 'Just now', text: s.silentSosMode ? 'Family members notified & listening in' : 'Mother Amina Akter opened live tracking link' },
+            { time: 'Just now', text: s.a11yMode === 'bystander' 
+              ? 'Bystander\'s emergency contacts notified & tracking witness report'
+              : (s.silentSosMode ? 'Family members notified & listening in' : 'Mother Amina Akter opened live tracking link') },
             { time: '1m ago', text: 'Nearest partner rider (Md. Jalil, 150m away) diverted to crash scene to assist as emergency responder' },
-            { time: '2m ago', text: s.silentSosMode
-              ? `Mother Amina Akter notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
-              : `Mother Amina Akter notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})` },
-            { time: '2m ago', text: s.silentSosMode
-              ? 'Stealth Live Audio Stream shared with 999 Desk'
-              : 'Transmitted Medical ID to 999 Dispatch Desk' },
-            { time: '3m ago', text: s.silentSosMode
-              ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts'
-              : 'SOS broadcast initiated — scanning vital profiles...' }
+            { time: '2m ago', text: s.a11yMode === 'bystander'
+              ? `Bystander's emergency contacts notified via SMS (Incident Witness Alert)`
+              : (s.silentSosMode
+                ? `Mother Amina Akter notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
+                : `Mother Amina Akter notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})`) },
+            { time: '2m ago', text: s.a11yMode === 'bystander'
+              ? 'Transmitted crash details to 999 Dispatch Desk'
+              : (s.silentSosMode
+                ? 'Stealth Live Audio Stream shared with 999 Desk'
+                : 'Transmitted Medical ID to 999 Dispatch Desk') },
+            { time: '3m ago', text: s.a11yMode === 'bystander'
+              ? 'SOS broadcast initiated by bystander witness — scanning scene details...'
+              : (s.silentSosMode
+                ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts'
+                : 'SOS broadcast initiated — scanning vital profiles...') }
           ],
           responders: [
             { name: 'Rafiqul Islam', role: 'First Responder', dist: '30m', status: 'Arrived on-site', lat: loc.lat + 0.0003, lng: loc.lng - 0.0004 },

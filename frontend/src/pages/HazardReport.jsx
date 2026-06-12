@@ -135,7 +135,7 @@ export default function HazardReport() {
   }
 
   const handleLoadDemoHazard = () => {
-    setPreview('https://images.unsplash.com/photo-1515162305285-0293e4767cc2?auto=format&fit=crop&q=80&w=600')
+    setPreview('/simulated_pothole.png')
     setDescription('Deep pothole crater detected in center lane. Structural risk to two-wheelers.')
     setLat('23.6922')
     setLng('90.5186')
