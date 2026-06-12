@@ -269,7 +269,13 @@ async def dispatch_node(state: EmergencyState) -> Dict[str, Any]:
     lng = state.get("lng", 91.86)
     
     # Notify Family
-    await notify_family("+880-171-XXX-XXXX")
+    family_members = state.get("family_members") or []
+    if not family_members:
+        family_members = [{"name": "Emergency Contact", "role": "Family", "phone": "+880-171-XXX-XXXX"}]
+        
+    for member in family_members:
+        phone = member.get("phone", "+880-171-XXX-XXXX")
+        await notify_family(phone)
     
     # Dispatch responder
     dispatch_res = await dispatch_emergency(hospital_name, lat, lng)

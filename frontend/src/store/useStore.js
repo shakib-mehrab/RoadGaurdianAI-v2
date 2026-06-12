@@ -132,6 +132,10 @@ const DEFAULT_USER_PROFILE = {
   emergencyContactName: 'Amina Akter',
   emergencyContactRole: 'Mother',
   emergencyContactPhone: '+880-171-XXX-XXXX',
+  familyMembers: [
+    { name: 'Amina Akter', role: 'Mother', phone: '+880-171-XXX-XXXX' },
+    { name: 'Tariq Akter', role: 'Brother', phone: '+880-172-YYY-YYYY' }
+  ],
   preferredLanguage: 'bn', // বাংলা
   accessibilityMode: 'deaf',
   medicalNotes: 'No major chronic illness',
@@ -486,6 +490,14 @@ export const useStore = create((set, get) => ({
         hospitals: [],
         mcpTools: [],
         guidanceStream: '',
+        rescueFeeds: {
+          familyStatus: [
+            { time: 'Just now', text: metadata?.accessibilityMode === 'silent' 
+              ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to trusted contacts' 
+              : 'SOS broadcast initiated — scanning vital profiles...' }
+          ],
+          responders: []
+        }
       })
       return
     }
@@ -509,10 +521,22 @@ export const useStore = create((set, get) => ({
         const prevLogs = s.agentLogs[activeAgent] || []
         const updatedLogs = message ? [...prevLogs, message] : prevLogs
         const newProgress = newStatus === 'done' ? 100 : newStatus === 'active' ? 50 : 0
+        
+        let newFamilyStatus = s.rescueFeeds?.familyStatus ? [...s.rescueFeeds.familyStatus] : []
+        if (message && message.toLowerCase().includes("notifying")) {
+          if (!newFamilyStatus.some(item => item.text === message)) {
+            newFamilyStatus.unshift({ time: 'Just now', text: message })
+          }
+        }
+        
         return {
           agentStatuses: { ...s.agentStatuses, [activeAgent]: newStatus },
           agentLogs: { ...s.agentLogs, [activeAgent]: updatedLogs },
           agentProgress: { ...s.agentProgress, [activeAgent]: newProgress },
+          rescueFeeds: {
+            ...s.rescueFeeds,
+            familyStatus: newFamilyStatus
+          }
         }
       })
 
@@ -626,11 +650,19 @@ export const useStore = create((set, get) => ({
           payload: { hospital: metadata?.hospital },
           response: `Vehicle ${metadata?.vehicleId || 'AMB'} dispatched. ETA ${metadata?.eta || 'N/A'}`
         }
+        const dispatchMsg = `Ambulance ${metadata?.vehicleId || 'AMB'} dispatched from ${metadata?.hospital || 'Hospital'}. ETA: ${metadata?.eta || 'N/A'}`
+        let newFamilyStatus = s.rescueFeeds?.familyStatus ? [...s.rescueFeeds.familyStatus] : []
+        newFamilyStatus.unshift({ time: 'Just now', text: dispatchMsg })
+        
         return {
           agentStatuses: { ...s.agentStatuses, dispatch: 'done' },
           agentLogs: { ...s.agentLogs, dispatch: [...(s.agentLogs.dispatch || []), message] },
           agentProgress: { ...s.agentProgress, dispatch: 100 },
-          mcpTools: [...(s.mcpTools || []), toolLog]
+          mcpTools: [...(s.mcpTools || []), toolLog],
+          rescueFeeds: {
+            ...s.rescueFeeds,
+            familyStatus: newFamilyStatus
+          }
         }
       })
       return
@@ -657,12 +689,20 @@ export const useStore = create((set, get) => ({
 
     // 10. Emergency Resolved Event
     if (event === 'emergency_resolved') {
-      set(s => ({
-        agentStatuses: { ...s.agentStatuses, orchestrator: 'done' },
-        agentLogs: { ...s.agentLogs, orchestrator: [...(s.agentLogs.orchestrator || []), message] },
-        agentProgress: { ...s.agentProgress, orchestrator: 100 },
-        incidentState: 'RESOLVED',
-      }))
+      set(s => {
+        let newFamilyStatus = s.rescueFeeds?.familyStatus ? [...s.rescueFeeds.familyStatus] : []
+        newFamilyStatus.unshift({ time: 'Just now', text: 'All rescue vectors coordinated successfully.' })
+        return {
+          agentStatuses: { ...s.agentStatuses, orchestrator: 'done' },
+          agentLogs: { ...s.agentLogs, orchestrator: [...(s.agentLogs.orchestrator || []), message] },
+          agentProgress: { ...s.agentProgress, orchestrator: 100 },
+          incidentState: 'RESOLVED',
+          rescueFeeds: {
+            ...s.rescueFeeds,
+            familyStatus: newFamilyStatus
+          }
+        }
+      })
       return
     }
 
@@ -720,10 +760,13 @@ export const useStore = create((set, get) => ({
       const messages = MOCK_LOG_MESSAGES[agentId] || []
       for (let i = 0; i < messages.length; i++) {
         await delay(600 + Math.random() * 400)
-        set(s => ({
-          agentLogs:     { ...s.agentLogs,     [agentId]: [...s.agentLogs[agentId], messages[i]] },
-          agentProgress: { ...s.agentProgress, [agentId]: Math.round(((i + 1) / messages.length) * 100) },
-        }))
+        set(s => {
+          const newState = {
+            agentLogs:     { ...s.agentLogs,     [agentId]: [...s.agentLogs[agentId], messages[i]] },
+            agentProgress: { ...s.agentProgress, [agentId]: Math.round(((i + 1) / messages.length) * 100) },
+          }
+          return newState
+        })
       }
 
       set(s => ({ agentStatuses: { ...s.agentStatuses, [agentId]: 'done' } }))
@@ -754,28 +797,48 @@ export const useStore = create((set, get) => ({
         runAgent('hazard',   1000),
         runAgent('guard',    300),
       ])
+      set(s => {
+        const fMembers = s.userProfile.familyMembers || [
+          { name: s.userProfile.emergencyContactName || 'Amina Akter', role: s.userProfile.emergencyContactRole || 'Mother', phone: s.userProfile.emergencyContactPhone || '+880-171-XXX-XXXX' }
+        ]
 
-      set(s => ({
-        incidentState: 'DISPATCHED',
-        rescueFeeds: {
-          familyStatus: [
-            { time: 'Just now', text: 'Nearest partner rider (Md. Jalil, 150m away) diverted to crash scene to assist as emergency responder' },
-            { time: '1s ago', text: s.silentSosMode
-              ? `Mother Amina Akter notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
-              : `Mother Amina Akter notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})` },
-            { time: '2s ago', text: s.silentSosMode
-              ? 'Stealth Live Audio Stream shared with 999 Desk'
-              : 'Transmitted Medical ID to 999 Dispatch Desk' },
-            { time: '3s ago', text: s.silentSosMode
-              ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to 3 trusted contacts'
-              : 'SOS broadcast initiated — scanning vital profiles...' }
-          ],
-          responders: [
-            { name: 'Rafiqul Islam', role: 'First Responder', dist: '220m', status: 'En route', lat: loc.lat + 0.0018, lng: loc.lng - 0.0015 },
-            { name: 'Md. Jalil (Pathao Rider)', role: 'Nearest Partner Diverted', dist: '150m', status: 'Diverting to Scene', lat: loc.lat + 0.0008, lng: loc.lng + 0.0004 }
-          ]
+        const dynamicFamilyNotifs = []
+        fMembers.forEach((m, i) => {
+          dynamicFamilyNotifs.push({
+            time: `${i + 1}s ago`,
+            text: s.silentSosMode
+              ? `${m.role} ${m.name} notified via Silent SMS (Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)})`
+              : `${m.role} ${m.name} notified via SMS (Policy: ${s.userProfile.policyNumber || 'N/A'})`
+          })
+          dynamicFamilyNotifs.unshift({
+            time: 'Just now',
+            text: s.silentSosMode
+              ? `${m.role} ${m.name} connected to Stealth Audio Stream`
+              : `${m.role} ${m.name} opened live tracking link`
+          })
+        })
+
+        return {
+          incidentState: 'DISPATCHED',
+          rescueFeeds: {
+            familyStatus: [
+              { time: 'Just now', text: 'Nearest partner rider (Md. Jalil, 150m away) diverted to crash scene to assist as emergency responder' },
+              ...dynamicFamilyNotifs,
+              { time: '3s ago', text: s.silentSosMode
+                ? 'Stealth Live Audio Stream shared with 999 Desk'
+                : 'Transmitted Medical ID to 999 Dispatch Desk' },
+              { time: '4s ago', text: s.silentSosMode
+                ? 'Silent SOS triggered (Women Safety Shield) — Silent SMS dispatched to trusted contacts'
+                : 'SOS broadcast initiated — scanning vital profiles...' }
+            ],
+            responders: [
+              { name: 'Rafiqul Islam', role: 'First Responder', dist: '30m', status: 'Arrived on-site', lat: loc.lat + 0.0003, lng: loc.lng - 0.0004 },
+              { name: 'Md. Jalil (Pathao Rider)', role: 'Nearest Partner Diverted', dist: '150m', status: 'Arrived to assist', lat: loc.lat + 0.0001, lng: loc.lng + 0.0002 },
+              { name: 'Dr. Tanvir', role: 'Volunteer Doctor', dist: '450m', status: 'En route', lat: loc.lat - 0.0025, lng: loc.lng + 0.0031 }
+            ]
+          }
         }
-      }))
+      })
       await delay(800)
 
       const getHaversineDistance = (lat1, lon1, lat2, lon2) => {

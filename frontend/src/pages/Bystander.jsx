@@ -7,7 +7,7 @@ import { Camera, AlertTriangle, ShieldAlert, CheckCircle, MapPin, Compass, Spark
 export default function Bystander() {
   const navigate = useNavigate()
   const { sendSOS } = useWebSocket()
-  const { triggerSOS, sosActive } = useStore()
+  const { triggerSOS, sosActive, userProfile } = useStore()
 
   const [description, setDescription] = useState('')
   const [photoPreview, setPhotoPreview] = useState('')
@@ -112,7 +112,8 @@ export default function Bystander() {
       emergencyType: 'road_accident',
       location: gpsCoords,
       accessibilityMode: 'bystander',
-      message: finalDescription
+      message: finalDescription,
+      familyMembers: userProfile?.familyMembers || []
     }
 
     // Attempt sending over WebSocket, otherwise fall back to local store trigger

@@ -7,19 +7,24 @@ import GuidanceStream from '../components/GuidanceStream'
 import TriagePanel from '../components/TriagePanel'
 import HospitalPanel from '../components/HospitalPanel'
 import MCPToolsPanel from '../components/MCPToolsPanel'
-import { Activity, AlertTriangle, Play, RefreshCw, BarChart2, Briefcase, MapPin, ShieldAlert, Bike, Car, Navigation, Siren, Copy, Check } from 'lucide-react'
+import { Activity, AlertTriangle, Play, RefreshCw, BarChart2, Briefcase, MapPin, ShieldAlert, Bike, Car, Navigation, Siren, Copy, Check, MessageSquare, Sliders } from 'lucide-react'
 
 function RescueNetworkFeeds() {
   const { rescueFeeds, userProfile, location } = useStore()
   const [feedTab, setFeedTab] = useState('family') // 'family' | 'community'
+  const [showManualWhatsApp, setShowManualWhatsApp] = useState(false)
 
   const familyStatus = rescueFeeds?.familyStatus || []
   const responders = rescueFeeds?.responders || []
 
-  const handleSendWhatsAppAlert = () => {
-    const phone = userProfile?.emergencyContactPhone ? userProfile.emergencyContactPhone.replace(/[^\d+]/g, '') : ''
+  const fMembers = userProfile.familyMembers || [
+    { name: userProfile.emergencyContactName || 'Amina Akter', role: userProfile.emergencyContactRole || 'Mother', phone: userProfile.emergencyContactPhone || '+880-171-XXX-XXXX' }
+  ]
+
+  const handleSendWhatsAppContactAlert = (member) => {
+    const phone = member.phone ? member.phone.replace(/[^\d+]/g, '') : ''
     if (!phone || phone.includes('X') || phone.length < 8) {
-      alert('⚠️ Invalid Emergency Contact Number! Please navigate to "Accessibility & Vitals Center" to configure a valid phone number.')
+      alert('⚠️ Invalid Emergency Contact Number! Please configure a valid phone number in Settings.')
       return
     }
     const lat = location?.lat?.toFixed(4) ?? '23.6922'
@@ -71,32 +76,56 @@ function RescueNetworkFeeds() {
       {/* Content */}
       {feedTab === 'family' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {/* WhatsApp Alert Button */}
-          <button
-            onClick={handleSendWhatsAppAlert}
-            style={{
-              padding: '10px 12px',
-              background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
-              border: '1px solid #128C7E',
-              color: '#fff',
-              fontWeight: 800,
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(37, 211, 102, 0.15)',
-              transition: 'transform 0.1s ease',
-              width: '100%',
-              marginBottom: 4
-            }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)' }}
-            onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-          >
-            <span>💬</span> Send SOS Alert via WhatsApp
-          </button>
+          {/* Toggle manual WhatsApp button list */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Automated MCP Alerts Active</span>
+            <button
+              onClick={() => setShowManualWhatsApp(!showManualWhatsApp)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: showManualWhatsApp ? 'var(--blue-400)' : 'var(--text-secondary)',
+                fontSize: '0.68rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+            >
+              <Sliders size={12} />
+              <span>Manual WhatsApp Triggers</span>
+            </button>
+          </div>
+
+          {/* Optional manual WhatsApp button list */}
+          {showManualWhatsApp && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10, padding: 10, background: 'rgba(0,0,0,0.15)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Manual Alert Contacts:</span>
+              {fMembers.map((m, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', borderBottom: idx < fMembers.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none', paddingBottom: idx < fMembers.length - 1 ? 4 : 0 }}>
+                  <span>{m.name} <strong style={{ color: 'var(--text-muted)', fontWeight: 500 }}>({m.role})</strong></span>
+                  <button
+                    onClick={() => handleSendWhatsAppContactAlert(m)}
+                    style={{
+                      background: 'rgba(37, 211, 102, 0.15)',
+                      border: '1px solid rgba(37, 211, 102, 0.4)',
+                      color: '#25D366',
+                      padding: '3px 8px',
+                      borderRadius: 'var(--radius-sm)',
+                      cursor: 'pointer',
+                      fontSize: '0.68rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}
+                  >
+                    <MessageSquare size={11} />
+                    <span>Send</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto' }} className="scroll-y">
             {familyStatus.length === 0 ? (
@@ -884,7 +913,8 @@ export default function Dashboard() {
                     onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.96)' }}
                     onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
                   >
-                    💬 WhatsApp Alert
+                    <MessageSquare size={12} />
+                    <span>WhatsApp Alert</span>
                   </button>
                 </div>
               </div>

@@ -66,6 +66,12 @@ export default function Accessibility() {
     insuranceProvider: userProfile.insuranceProvider || '',
     policyNumber: userProfile.policyNumber || ''
   })
+  const [familyMembers, setFamilyMembers] = useState(userProfile.familyMembers || [
+    { name: 'Amina Akter', role: 'Mother', phone: '+880-171-XXX-XXXX' }
+  ])
+  const [newMemberName, setNewMemberName] = useState('')
+  const [newMemberRole, setNewMemberRole] = useState('')
+  const [newMemberPhone, setNewMemberPhone] = useState('')
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [qrDownloading, setQrDownloading] = useState(false)
 
@@ -85,7 +91,14 @@ export default function Accessibility() {
 
   const handleProfileSave = (e) => {
     e.preventDefault()
-    updateProfile(formValues)
+    const primaryContact = familyMembers[0] || { name: '', role: '', phone: '' }
+    updateProfile({
+      ...formValues,
+      emergencyContactName: primaryContact.name,
+      emergencyContactRole: primaryContact.role,
+      emergencyContactPhone: primaryContact.phone,
+      familyMembers
+    })
     setSaveSuccess(true)
     setTimeout(() => setSaveSuccess(false), 3000)
   }
@@ -574,37 +587,105 @@ export default function Accessibility() {
 
             {/* Emergency Contacts */}
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>Emergency Contact</label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 10, marginBottom: 8 }}>
-                <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>Emergency Family Contacts</label>
+              
+              {/* List of current members */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+                {familyMembers.map((member, index) => (
+                  <div 
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '8px 12px',
+                      fontSize: '0.8rem'
+                    }}
+                  >
+                    <div>
+                      <strong style={{ color: '#fff' }}>{member.name}</strong>{' '}
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>({member.role})</span>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontFamily: 'monospace', marginTop: 2 }}>
+                        {member.phone}
+                      </div>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={() => setFamilyMembers(familyMembers.filter((_, i) => i !== index))}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.25)',
+                        color: 'var(--red-400)',
+                        padding: '4px 8px',
+                        borderRadius: 'var(--radius-sm)',
+                        cursor: 'pointer',
+                        fontSize: '0.72rem'
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Form to add a new member */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 10, background: 'rgba(0,0,0,0.15)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.03)' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Add Family Member</span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 8 }}>
                   <input
                     type="text"
-                    value={formValues.emergencyContactName}
-                    onChange={e => setFormValues({ ...formValues, emergencyContactName: e.target.value })}
-                    placeholder="Contact Name"
-                    style={{ width: '100%', padding: '8px 10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff', fontSize: '0.8rem' }}
-                    required
+                    placeholder="Full Name"
+                    value={newMemberName}
+                    onChange={e => setNewMemberName(e.target.value)}
+                    style={{ padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff', fontSize: '0.78rem' }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Relationship (e.g. Brother)"
+                    value={newMemberRole}
+                    onChange={e => setNewMemberRole(e.target.value)}
+                    style={{ padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff', fontSize: '0.78rem' }}
                   />
                 </div>
-                <div>
+                <div style={{ display: 'flex', gap: 8 }}>
                   <input
                     type="text"
-                    value={formValues.emergencyContactRole}
-                    onChange={e => setFormValues({ ...formValues, emergencyContactRole: e.target.value })}
-                    placeholder="Relationship (e.g. Mother)"
-                    style={{ width: '100%', padding: '8px 10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff', fontSize: '0.8rem' }}
-                    required
+                    placeholder="Phone Number"
+                    value={newMemberPhone}
+                    onChange={e => setNewMemberPhone(e.target.value)}
+                    style={{ flex: 1, padding: '6px 8px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff', fontSize: '0.78rem' }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newMemberName || !newMemberRole || !newMemberPhone) {
+                        alert('Please enter a Name, Relationship, and Phone Number!')
+                        return
+                      }
+                      setFamilyMembers([...familyMembers, { name: newMemberName, role: newMemberRole, phone: newMemberPhone }])
+                      setNewMemberName('')
+                      setNewMemberRole('')
+                      setNewMemberPhone('')
+                    }}
+                    style={{
+                      background: 'rgba(48, 209, 88, 0.15)',
+                      border: '1px solid var(--green-400)',
+                      color: 'var(--green-400)',
+                      padding: '6px 12px',
+                      borderRadius: 'var(--radius-sm)',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Add
+                  </button>
                 </div>
               </div>
-              <input
-                type="text"
-                value={formValues.emergencyContactPhone}
-                onChange={e => setFormValues({ ...formValues, emergencyContactPhone: e.target.value })}
-                placeholder="Phone Number"
-                style={{ width: '100%', padding: '8px 10px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff', fontSize: '0.8rem' }}
-                required
-              />
             </div>
 
             {/* Insurance Policy info */}

@@ -13,6 +13,7 @@ class EmergencyState(TypedDict):
     lng: float
     userId: str
     accessibilityMode: str
+    family_members: Optional[List[Dict[str, str]]]
 
     # Orchestrator output
     emergency_type: Optional[str]

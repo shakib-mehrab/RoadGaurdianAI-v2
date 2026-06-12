@@ -7,8 +7,11 @@ from backend.core.websocket_manager import ws_manager
 
 async def notify_family(contact_info: str) -> Dict[str, Any]:
     """
-    Simulates sending an SMS/Viber emergency alert to the victim's family.
+    Sends an actual WhatsApp emergency alert if CallMeBot or Twilio credentials
+    are set up in .env, otherwise falls back to a simulated dispatch log.
     """
+    import urllib.parse
+    import os
     print(f"[MCP TOOL] notify_family activated with: {contact_info}")
     
     # Broadcast progress
@@ -20,13 +23,72 @@ async def notify_family(contact_info: str) -> Dict[str, Any]:
         metadata={"priority": "high", "details": {"action": "send_sms"}}
     )
     
+    cleaned_phone = "".join([c for c in contact_info if c.isdigit() or c == "+"])
+    message_sent = False
+    details = {}
+    
+    body = (
+        "🚨 *ROADGUARD EMERGENCY ALERT* 🚨\n\n"
+        "A road accident emergency has been triggered for your family member.\n"
+        "Status: Critical (Level 4 Triage)\n"
+        "Response: Ambulance dispatched.\n\n"
+        "Please check the live tracking dashboard immediately."
+    )
+    
+    callmebot_key = os.environ.get("CALLMEBOT_API_KEY")
+    twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    twilio_auth = os.environ.get("TWILIO_AUTH_TOKEN")
+    twilio_from = os.environ.get("TWILIO_WHATSAPP_FROM", "whatsapp:+14155238886")
+    
+    if callmebot_key and cleaned_phone and "X" not in cleaned_phone:
+        try:
+            encoded_body = urllib.parse.quote(body)
+            url = f"https://api.callmebot.com/whatsapp.php?phone={cleaned_phone}&text={encoded_body}&apikey={callmebot_key}"
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, timeout=10.0)
+                if response.status_code == 200:
+                    message_sent = True
+                    details = {"provider": "CallMeBot", "status": "success"}
+                    print(f"[WhatsApp MCP] CallMeBot sent successfully to {cleaned_phone}")
+                else:
+                    print(f"[WhatsApp MCP] CallMeBot failed with status: {response.status_code}")
+        except Exception as e:
+            print(f"[WhatsApp MCP] CallMeBot error: {e}")
+            
+    elif twilio_sid and twilio_auth and cleaned_phone and "X" not in cleaned_phone:
+        try:
+            url = f"https://api.twilio.com/2010-04-01/Accounts/{twilio_sid}/Messages.json"
+            auth = (twilio_sid, twilio_auth)
+            data = {
+                "From": twilio_from,
+                "To": f"whatsapp:{cleaned_phone}",
+                "Body": body
+            }
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url, auth=auth, data=data, timeout=10.0)
+                if response.status_code in [200, 201]:
+                    message_sent = True
+                    details = {"provider": "Twilio", "status": "success"}
+                    print(f"[WhatsApp MCP] Twilio sent successfully to {cleaned_phone}")
+                else:
+                    print(f"[WhatsApp MCP] Twilio failed with status: {response.status_code}")
+        except Exception as e:
+            print(f"[WhatsApp MCP] Twilio error: {e}")
+
     await asyncio.sleep(1.0)
     
+    if message_sent:
+        msg = f"WhatsApp alert sent successfully to {contact_info} via {details['provider']}."
+    else:
+        msg = f"SMS/Viber dispatch simulated for {contact_info} (add CALLMEBOT_API_KEY or Twilio SID to .env to send real WhatsApps)."
+        print(f"[WhatsApp MCP Simulator] Number: {contact_info} | Body: {body}")
+        
     return {
         "tool": "notify_family",
         "status": "success",
         "recipient": contact_info,
-        "message": "Emergency broadcast successfully sent to family member."
+        "message": msg,
+        "details": details
     }
 
 def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:

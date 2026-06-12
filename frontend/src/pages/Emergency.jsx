@@ -17,6 +17,7 @@ export default function Emergency() {
     setEmergencyType,
     a11yMode,
     setA11yMode,
+    userProfile,
   } = useStore()
 
   const [description, setDescription] = useState('')
@@ -34,7 +35,8 @@ export default function Emergency() {
       emergencyType: 'women_safety_silent',
       location: gpsCoords,
       accessibilityMode: 'silent',
-      message: 'Silent SOS triggered via Women Safety Calculator mode.'
+      message: 'Silent SOS triggered via Women Safety Calculator mode.',
+      familyMembers: userProfile?.familyMembers || []
     }
     const sent = sendSOS(payload)
     if (!sent) {
@@ -179,7 +181,8 @@ export default function Emergency() {
       emergencyType: emergencyType || 'general',
       location: gpsCoords,
       accessibilityMode: a11yMode || 'default',
-      message: description || `SOS emergency trigger. Blood group: ${bloodGroup}. Type: ${emergencyType || 'general'}`
+      message: description || `SOS emergency trigger. Blood group: ${bloodGroup}. Type: ${emergencyType || 'general'}`,
+      familyMembers: userProfile?.familyMembers || []
     }
 
     // Try sending over websocket first

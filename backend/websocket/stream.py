@@ -44,6 +44,7 @@ async def websocket_endpoint(websocket: WebSocket):
             emergency_type = payload.get("emergencyType", "general")
             loc_data = payload.get("location", {"lat": 24.89, "lng": 91.86})
             acc_mode = payload.get("accessibilityMode", "default")
+            family_members = payload.get("familyMembers", [])
             
             # 1. Stream the initial 'sos_triggered' event (Strict Contract Event 1)
             await ws_manager.broadcast_event(
@@ -55,7 +56,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     "userId": user_id,
                     "emergencyType": emergency_type,
                     "location": loc_data,
-                    "accessibilityMode": acc_mode
+                    "accessibilityMode": acc_mode,
+                    "familyMembers": family_members
                 }
             )
             
@@ -67,6 +69,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 "lng": float(loc_data.get("lng", 91.86)),
                 "userId": user_id,
                 "accessibilityMode": acc_mode,
+                "family_members": family_members,
                 
                 "emergency_type": None,
                 "rationale": None,
